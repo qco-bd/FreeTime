@@ -1,5 +1,3 @@
 setTimeout(() => {
-
-console.log("FreeTime is loading...");
-
+window.location.href = "login.html";
 }, 2500);
