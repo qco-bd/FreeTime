@@ -1,9 +1,13 @@
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { app } from "./firebase.js";
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+import { auth, app } from "./firebase.js";
 
 const db = getFirestore(app);
-const auth = getAuth(app);
 
 window.savePostToFirebase = async function (text, background) {
 
@@ -39,9 +43,9 @@ window.savePostToFirebase = async function (text, background) {
 
     } catch (error) {
 
-        console.error("Post Error:", error);
+        console.error("Firebase Post Error:", error);
 
-        alert("Failed to publish post.");
+        alert("Failed to publish post.\n\n" + error.message);
 
         return false;
     }
