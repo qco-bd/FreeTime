@@ -8,12 +8,19 @@ import {
 onAuthStateChanged(auth, (user) => {
 
     if (!user) {
-
         window.location.href = "login.html";
-
         return;
     }
 
+    const userName = user.displayName || "FreeTime User";
+    const userEmail = user.email || "";
+
+    document.getElementById("userName").textContent = userName;
+    document.getElementById("userEmail").textContent = userEmail;
+
+    document.getElementById("userNameSide").textContent = userName;
+    document.getElementById("userEmailSide").textContent = userEmail;
+});
 
     console.log("Logged in user:", user);
 
