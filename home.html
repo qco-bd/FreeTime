@@ -2,852 +2,222 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Home • FreeTime</title>
 
-    <style>
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f5f7fb;
-            color: #111827;
-            padding-bottom: 70px;
-        }
-
-        /* HEADER */
-
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-
-            width: 100%;
-            height: 60px;
-
-            background: #ffffff;
-
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .header-inner {
-            width: 100%;
-            max-width: 1100px;
-
-            height: 100%;
-
-            margin: auto;
-
-            padding: 0 15px;
-
-            display: flex;
-            align-items: center;
-        }
-
-        .logo {
-            color: #1877f2;
-
-            font-size: 25px;
-            font-weight: 800;
-
-            text-decoration: none;
-        }
-
-        .search {
-            flex: 1;
-
-            max-width: 360px;
-
-            margin-left: 25px;
-        }
-
-        .search input {
-            width: 100%;
-
-            padding: 10px 16px;
-
-            border: none;
-            outline: none;
-
-            border-radius: 22px;
-
-            background: #f0f2f5;
-
-            font-size: 14px;
-        }
-
-        .header-actions {
-            margin-left: auto;
-
-            display: flex;
-            align-items: center;
-
-            gap: 8px;
-        }
-
-        .header-btn {
-            width: 40px;
-            height: 40px;
-
-            border: none;
-
-            border-radius: 50%;
-
-            background: #f0f2f5;
-
-            font-size: 18px;
-
-            cursor: pointer;
-        }
-
-        .mini-avatar {
-            width: 38px;
-            height: 38px;
-
-            border-radius: 50%;
-
-            background: #1877f2;
-
-            color: white;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-weight: bold;
-        }
-
-        /* MAIN */
-
-        .main {
-            width: 100%;
-            max-width: 680px;
-
-            margin: auto;
-
-            padding: 15px 10px;
-        }
-
-        /* WELCOME */
-
-        .welcome {
-            background: white;
-
-            border: 1px solid #e5e7eb;
-
-            border-radius: 14px;
-
-            padding: 15px;
-
-            margin-bottom: 12px;
-        }
-
-        .welcome-row {
-            display: flex;
-            align-items: center;
-
-            gap: 10px;
-        }
-
-        .welcome-avatar {
-            width: 44px;
-            height: 44px;
-
-            border-radius: 50%;
-
-            background: #1877f2;
-
-            color: white;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-weight: bold;
-        }
-
-        .welcome-text strong {
-            display: block;
-
-            font-size: 15px;
-        }
-
-        .welcome-text span {
-            display: block;
-
-            margin-top: 3px;
-
-            color: #6b7280;
-
-            font-size: 12px;
-        }
-
-        /* STORIES */
-
-        .stories {
-            background: white;
-
-            border: 1px solid #e5e7eb;
-
-            border-radius: 14px;
-
-            padding: 14px;
-
-            margin-bottom: 12px;
-        }
-
-        .section-title {
-            font-size: 16px;
-
-            font-weight: 700;
-
-            margin-bottom: 12px;
-        }
-
-        .story-list {
-            display: flex;
-
-            gap: 10px;
-
-            overflow-x: auto;
-
-            scrollbar-width: none;
-        }
-
-        .story-list::-webkit-scrollbar {
-            display: none;
-        }
-
-        .story {
-            flex: 0 0 82px;
-
-            height: 110px;
-
-            border-radius: 12px;
-
-            background: linear-gradient(
-                145deg,
-                #1877f2,
-                #7b2ff7
-            );
-
-            color: white;
-
-            display: flex;
-            align-items: flex-end;
-
-            padding: 8px;
-
-            font-size: 12px;
-
-            font-weight: bold;
-        }
-
-        .create-story {
-            background: #f0f2f5;
-
-            color: #111827;
-
-            align-items: center;
-
-            justify-content: center;
-
-            text-align: center;
-        }
-
-        /* CREATE POST */
-
-        .create-post {
-            background: white;
-
-            border: 1px solid #e5e7eb;
-
-            border-radius: 14px;
-
-            padding: 14px;
-
-            margin-bottom: 12px;
-        }
-
-        .create-row {
-            display: flex;
-
-            align-items: center;
-
-            gap: 10px;
-        }
-
-        .create-avatar {
-            width: 42px;
-            height: 42px;
-
-            flex-shrink: 0;
-
-            border-radius: 50%;
-
-            background: #1877f2;
-
-            color: white;
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            font-weight: bold;
-        }
-
-        #postText {
-            flex: 1;
-
-            min-height: 42px;
-
-            padding: 11px 15px;
-
-            border: none;
-
-            outline: none;
-
-            background: #f0f2f5;
-
-            border-radius: 22px;
-
-            resize: none;
-
-            font-family: inherit;
-
-            font-size: 14px;
-        }
-
-        .create-actions {
-            display: flex;
-
-            gap: 5px;
-
-            margin-top: 12px;
-
-            padding-top: 10px;
-
-            border-top: 1px solid #eeeeee;
-        }
-
-        .create-action {
-            flex: 1;
-
-            border: none;
-
-            background: transparent;
-
-            padding: 9px 5px;
-
-            border-radius: 8px;
-
-            cursor: pointer;
-
-            font-size: 13px;
-
-            font-weight: 600;
-        }
-
-        .create-action:hover {
-            background: #f0f2f5;
-        }
-
-        #postStatus {
-            text-align: center;
-
-            font-size: 13px;
-
-            margin-top: 8px;
-        }
-
-        /* POST */
-
-        .post {
-            background: white;
-
-            border: 1px solid #e5e7eb;
-
-            border-radius: 14px;
-
-            margin-bottom: 12px;
-
-            overflow: hidden;
-        }
-
-        .post-header {
-            display: flex;
-
-            align-items: center;
-
-            gap: 10px;
-
-            padding: 14px;
-        }
-
-        .post-avatar {
-            width: 42px;
-            height: 42px;
-
-            border-radius: 50%;
-
-            background: #1877f2;
-
-            color: white;
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            font-weight: bold;
-        }
-
-        .post-user {
-            font-size: 14px;
-
-            font-weight: 700;
-        }
-
-        .post-time {
-            margin-top: 3px;
-
-            color: #6b7280;
-
-            font-size: 11px;
-        }
-
-        .post-content {
-            padding: 0 14px 14px;
-
-            font-size: 15px;
-
-            line-height: 1.5;
-
-            white-space: pre-wrap;
-        }
-
-        .post-stats {
-            display: flex;
-
-            justify-content: space-between;
-
-            padding: 9px 14px;
-
-            border-top: 1px solid #eeeeee;
-
-            color: #6b7280;
-
-            font-size: 12px;
-        }
-
-        .post-buttons {
-            display: flex;
-
-            padding: 4px;
-
-            border-top: 1px solid #eeeeee;
-        }
-
-        .post-buttons button {
-            flex: 1;
-
-            border: none;
-
-            background: transparent;
-
-            padding: 10px 5px;
-
-            border-radius: 8px;
-
-            color: #4b5563;
-
-            cursor: pointer;
-
-            font-size: 13px;
-
-            font-weight: 600;
-        }
-
-        .post-buttons button:hover {
-            background: #f0f2f5;
-        }
-
-        /* LOGOUT */
-
-        .logout-area {
-            text-align: center;
-
-            margin: 25px 0;
-        }
-
-        .logout-btn {
-            border: none;
-
-            background: #fee2e2;
-
-            color: #dc2626;
-
-            padding: 10px 25px;
-
-            border-radius: 9px;
-
-            font-weight: bold;
-
-            cursor: pointer;
-        }
-
-        /* MOBILE NAV */
-
-        .mobile-nav {
-            position: fixed;
-
-            bottom: 0;
-            left: 0;
-
-            width: 100%;
-
-            height: 58px;
-
-            background: white;
-
-            border-top: 1px solid #e5e7eb;
-
-            display: none;
-
-            z-index: 2000;
-        }
-
-        .mobile-nav a {
-            flex: 1;
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            text-decoration: none;
-
-            color: #4b5563;
-
-            font-size: 20px;
-        }
-
-        .mobile-nav a.active {
-            color: #1877f2;
-        }
-
-        /* MOBILE */
-
-        @media (max-width: 700px) {
-
-            .search {
-                display: none;
-            }
-
-            .main {
-                padding: 10px 7px;
-            }
-
-            .mobile-nav {
-                display: flex;
-            }
-
-            body {
-                padding-bottom: 65px;
-            }
-
-        }
-
-        @media (max-width: 380px) {
-
-            .logo {
-                font-size: 22px;
-            }
-
-            .header-btn {
-                width: 35px;
-                height: 35px;
-            }
-
-            .mini-avatar {
-                width: 35px;
-                height: 35px;
-            }
-
-            .story {
-                flex-basis: 76px;
-                height: 105px;
-            }
-
-        }
-
-    </style>
-
+    <link rel="stylesheet" href="./home.css">
 </head>
 
 <body>
 
+    <!-- HEADER -->
+    <header class="top-header">
 
-<!-- HEADER -->
-
-<header>
-
-    <div class="header-inner">
-
-        <a
-            href="home.html"
-            class="logo"
-        >
+        <div class="logo">
             FreeTime
-        </a>
-
-        <div class="search">
-
-            <input
-                type="search"
-                placeholder="Search FreeTime..."
-            >
-
         </div>
 
         <div class="header-actions">
 
-            <button
-                class="header-btn"
-                title="Messages"
-            >
-                💬
-            </button>
+            <button>🔍</button>
+            <button>💬</button>
+            <button>🔔</button>
 
-            <button
-                class="header-btn"
-                title="Notifications"
-            >
-                🔔
-            </button>
-
-            <div
-                class="mini-avatar"
+            <img
                 id="headerAvatar"
+                class="header-avatar"
+                src=""
+                alt="Profile"
             >
-                U
-            </div>
 
         </div>
 
-    </div>
-
-</header>
+    </header>
 
 
-<!-- MAIN -->
+    <!-- MAIN -->
+    <main class="main-container">
 
-<main class="main">
+        <!-- WELCOME -->
+        <section class="welcome-card">
 
-
-    <!-- WELCOME -->
-
-    <section class="welcome">
-
-        <div class="welcome-row">
-
-            <div
-                class="welcome-avatar"
+            <img
                 id="welcomeAvatar"
+                class="welcome-avatar"
+                src=""
+                alt="Profile"
             >
-                U
-            </div>
 
-            <div class="welcome-text">
+            <div>
 
-                <strong id="userName">
-                    Loading...
-                </strong>
+                <h2>
+                    Welcome, <span id="userName">User</span> 👋
+                </h2>
 
-                <span id="userEmail"></span>
+                <p id="userEmail"></p>
 
             </div>
 
-        </div>
-
-    </section>
+        </section>
 
 
-    <!-- STORIES -->
+        <!-- STORIES -->
+        <section class="stories">
 
-    <section class="stories">
-
-        <div class="section-title">
-            Stories
-        </div>
-
-        <div class="story-list">
-
-            <div class="story create-story">
-                ➕<br>
-                Create Story
+            <div class="story">
+                <div class="story-circle">+</div>
+                <span>Create Story</span>
             </div>
 
             <div class="story">
-                Your Story
+                <div class="story-circle">👤</div>
+                <span>Friend</span>
             </div>
 
             <div class="story">
-                FreeTime
+                <div class="story-circle">🌎</div>
+                <span>Explore</span>
             </div>
 
-            <div class="story">
-                Friends
+        </section>
+
+
+        <!-- CREATE POST -->
+        <section class="create-post">
+
+            <div class="create-post-top">
+
+                <img
+                    id="createAvatar"
+                    class="create-avatar"
+                    src=""
+                    alt="Profile"
+                >
+
+                <textarea
+                    id="postText"
+                    placeholder="What's on your mind?"
+                ></textarea>
+
             </div>
 
-        </div>
 
-    </section>
-
-
-    <!-- CREATE POST -->
-
-    <section class="create-post">
-
-        <div class="create-row">
+            <!-- BACKGROUND SELECTOR -->
 
             <div
-                class="create-avatar"
-                id="createAvatar"
+                id="backgroundSelector"
+                class="background-selector"
             >
-                U
+
+                <button
+                    class="bg-option bg-1 active"
+                    data-background="bg-1"
+                    title="Blue"
+                ></button>
+
+                <button
+                    class="bg-option bg-2"
+                    data-background="bg-2"
+                    title="Purple"
+                ></button>
+
+                <button
+                    class="bg-option bg-3"
+                    data-background="bg-3"
+                    title="Sunset"
+                ></button>
+
+                <button
+                    class="bg-option bg-4"
+                    data-background="bg-4"
+                    title="Green"
+                ></button>
+
+                <button
+                    class="bg-option bg-5"
+                    data-background="bg-5"
+                    title="Pink"
+                ></button>
+
+                <button
+                    class="bg-option bg-6"
+                    data-background="bg-6"
+                    title="Ocean"
+                ></button>
+
+                <button
+                    class="bg-option bg-7"
+                    data-background="bg-7"
+                    title="Dark"
+                ></button>
+
             </div>
 
-            <textarea
-                id="postText"
-                placeholder="What's on your mind?"
-                rows="1"
-            ></textarea>
 
-        </div>
+            <div class="post-options">
 
+                <button type="button">
+                    📷 Photo
+                </button>
 
-        <div class="create-actions">
+                <button type="button">
+                    🎥 Video
+                </button>
+
+                <button type="button">
+                    😊 Feeling
+                </button>
+
+            </div>
+
 
             <button
-                class="create-action"
-                type="button"
+                id="publishPostBtn"
+                class="publish-btn"
             >
-                📷 Photo
+                Post
             </button>
 
-            <button
-                class="create-action"
-                type="button"
-            >
-                🎥 Video
-            </button>
+            <p id="postStatus"></p>
 
-            <button
-                class="create-action"
-                type="button"
-            >
-                😊 Feeling
-            </button>
-
-        </div>
+        </section>
 
 
-        <button
-            id="publishPostBtn"
-            type="button"
-            style="
-                width:100%;
-                margin-top:10px;
-                padding:11px;
-                border:none;
-                border-radius:9px;
-                background:#1877f2;
-                color:white;
-                font-weight:bold;
-                cursor:pointer;
-            "
-        >
-            Post
-        </button>
+        <!-- POSTS -->
+        <section id="postsContainer"></section>
 
 
-        <p id="postStatus"></p>
-
-    </section>
-
-
-    <!-- POSTS -->
-
-    <section id="postsContainer"></section>
-
-
-    <!-- LOGOUT -->
-
-    <div class="logout-area">
-
+        <!-- LOGOUT -->
         <button
             class="logout-btn"
             onclick="logoutUser()"
         >
-            🚪 Logout
+            Logout
         </button>
 
-    </div>
+    </main>
 
 
-</main>
+    <!-- MOBILE NAV -->
+
+    <nav class="mobile-nav">
+
+        <button>🏠</button>
+        <button>👥</button>
+        <button>➕</button>
+        <button>🔔</button>
+        <button>☰</button>
+
+    </nav>
 
 
-<!-- MOBILE NAV -->
-
-<nav class="mobile-nav">
-
-    <a
-        href="home.html"
-        class="active"
-    >
-        🏠
-    </a>
-
-    <a href="#">
-        👥
-    </a>
-
-    <a href="#">
-        ➕
-    </a>
-
-    <a href="#">
-        💬
-    </a>
-
-    <a href="#">
-        👤
-    </a>
-
-</nav>
-
-
-<script
-    type="module"
-    src="./home.js"
-></script>
-
+    <script
+        type="module"
+        src="./home.js"
+    ></script>
 
 </body>
 
-</html>
+                    </html>
