@@ -5,28 +5,26 @@ import {
 } from "./firebase-config.js";
 
 
+// ================================
+// CHECK LOGIN & LOAD USER
+// ================================
+
 onAuthStateChanged(auth, (user) => {
 
+    // User is not logged in
     if (!user) {
         window.location.href = "login.html";
         return;
     }
 
+    console.log("Logged in user:", user);
+
     const userName = user.displayName || "FreeTime User";
     const userEmail = user.email || "";
 
-    document.getElementById("userName").textContent = userName;
-    document.getElementById("userEmail").textContent = userEmail;
-
-    document.getElementById("userNameSide").textContent = userName;
-    document.getElementById("userEmailSide").textContent = userEmail;
-});
-
-    console.log("Logged in user:", user);
-
-
-    const userName = user.displayName || "FreeTime User";
-
+    // ================================
+    // USER NAME
+    // ================================
 
     const nameElement = document.getElementById("userName");
 
@@ -35,16 +33,58 @@ onAuthStateChanged(auth, (user) => {
     }
 
 
+    // ================================
+    // USER EMAIL
+    // ================================
+
     const emailElement = document.getElementById("userEmail");
 
     if (emailElement) {
-        emailElement.textContent = user.email;
+        emailElement.textContent = userEmail;
+    }
+
+
+    // ================================
+    // AVATARS
+    // ================================
+
+    // First letter of user's name
+    const firstLetter = userName
+        .trim()
+        .charAt(0)
+        .toUpperCase() || "U";
+
+
+    const welcomeAvatar =
+        document.getElementById("welcomeAvatar");
+
+    if (welcomeAvatar) {
+        welcomeAvatar.textContent = firstLetter;
+    }
+
+
+    const createAvatar =
+        document.getElementById("createAvatar");
+
+    if (createAvatar) {
+        createAvatar.textContent = firstLetter;
+    }
+
+
+    const headerAvatar =
+        document.getElementById("headerAvatar");
+
+    if (headerAvatar) {
+        headerAvatar.textContent = firstLetter;
     }
 
 });
 
 
-// Logout
+// ================================
+// LOGOUT
+// ================================
+
 window.logoutUser = async function () {
 
     try {
@@ -56,6 +96,8 @@ window.logoutUser = async function () {
     } catch (error) {
 
         console.error("Logout error:", error);
+
+        alert("Logout failed. Please try again.");
 
     }
 
