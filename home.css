@@ -574,3 +574,61 @@ body {
     }
 
     }
+.freetime-post-card {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    margin: 16px auto;
+    max-width: 600px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.freetime-post-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.freetime-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #1877f2;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.freetime-post-header strong {
+    display: block;
+}
+
+.freetime-post-header small {
+    color: #777;
+    font-size: 12px;
+}
+
+.freetime-post-text {
+    padding: 20px 5px;
+    font-size: 17px;
+    line-height: 1.5;
+    min-height: 70px;
+}
+
+.freetime-post-actions {
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+
+.freetime-post-actions button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 8px 12px;
+    font-size: 14px;
+}
