@@ -1,834 +1,325 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<!DOCTYPE html>
+<html lang="en">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+<head>
 
-<title>Login • FreeTime</title>
+    <meta charset="UTF-8">
 
-
-<style>
-
-    * {
-        box-sizing: border-box;
-    }
-
-
-    body {
-        margin: 0;
-        min-height: 100vh;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        font-family: Arial, sans-serif;
-
-        background:
-            linear-gradient(
-                135deg,
-                #eef4ff,
-                #f8faff
-            );
-    }
-
-
-    .container {
-        width: 92%;
-        max-width: 400px;
-    }
-
-
-    .logo {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
-
-    .logo h1 {
-        margin: 0;
-
-        font-size: 40px;
-
-        color: #1877f2;
-    }
-
-
-    .logo p {
-        margin-top: 8px;
-
-        color: #666;
-
-        font-size: 14px;
-    }
-
-
-    .card {
-        background: white;
-
-        padding: 28px;
-
-        border-radius: 18px;
-
-        box-shadow:
-            0 8px 30px
-            rgba(0, 0, 0, 0.10);
-    }
-
-
-    .card h2 {
-        text-align: center;
-
-        margin-top: 0;
-        margin-bottom: 22px;
-    }
-
-
-    input {
-        width: 100%;
-
-        padding: 14px;
-
-        margin-bottom: 13px;
-
-        border:
-            1px solid #ddd;
-
-        border-radius: 10px;
-
-        font-size: 15px;
-
-        outline: none;
-    }
-
-
-    input:focus {
-        border-color: #1877f2;
-    }
-
-
-    button {
-        width: 100%;
-
-        padding: 14px;
-
-        border: none;
-
-        border-radius: 10px;
-
-        background: #1877f2;
-
-        color: white;
-
-        font-size: 16px;
-
-        font-weight: bold;
-
-        cursor: pointer;
-    }
-
-
-    button:hover {
-        background: #0d65d9;
-    }
-
-
-    button:disabled {
-        opacity: 0.6;
-
-        cursor: not-allowed;
-    }
-
-
-    .switch {
-        text-align: center;
-
-        margin-top: 18px;
-
-        color: #666;
-
-        font-size: 14px;
-    }
-
-
-    .switch span {
-        color: #1877f2;
-
-        font-weight: bold;
-
-        cursor: pointer;
-    }
-
-
-    #message {
-        text-align: center;
-
-        margin-top: 15px;
-
-        font-size: 14px;
-
-        min-height: 20px;
-    }
-
-
-    .hidden {
-        display: none;
-    }
-
-</style>
-
-</head><body><div class="container"><!-- LOGO -->
-
-<div class="logo">
-
-    <h1>FreeTime</h1>
-
-    <p>
-        Enjoy Your Free Time with us.
-    </p>
-
-</div>
-
-
-
-<div class="card">
-
-
-    <!-- ====================== -->
-    <!-- LOGIN -->
-    <!-- ====================== -->
-
-    <div id="loginBox">
-
-        <h2>
-            Welcome Back
-        </h2>
-
-
-        <input
-            type="email"
-            id="loginEmail"
-            placeholder="Email address"
-            autocomplete="email"
-        >
-
-
-        <input
-            type="password"
-            id="loginPassword"
-            placeholder="Password"
-            autocomplete="current-password"
-        >
-
-
-        <button id="loginBtn">
-
-            Log In
-
-        </button>
-
-
-        <div class="switch">
-
-            Don't have an account?
-
-            <span id="showSignupBtn">
-                Create one
-            </span>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- ====================== -->
-    <!-- SIGNUP -->
-    <!-- ====================== -->
-
-    <div
-        id="signupBox"
-        class="hidden"
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
     >
 
-        <h2>
-            Create Account
-        </h2>
+    <title>Login • FreeTime</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-family: Arial, sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #eef4ff,
+                    #f8faff
+                );
+        }
+
+        .container {
+            width: 92%;
+            max-width: 400px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo h1 {
+            margin: 0;
+
+            font-size: 40px;
+
+            color: #1877f2;
+        }
+
+        .logo p {
+            margin-top: 8px;
+
+            color: #666;
+
+            font-size: 14px;
+        }
+
+        .card {
+            background: white;
+
+            padding: 28px;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(0, 0, 0, 0.10);
+        }
+
+        .card h2 {
+            text-align: center;
+
+            margin-top: 0;
+            margin-bottom: 22px;
+        }
+
+        input {
+            width: 100%;
+
+            padding: 14px;
+
+            margin-bottom: 13px;
+
+            border: 1px solid #ddd;
+
+            border-radius: 10px;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #1877f2;
+        }
+
+        button {
+            width: 100%;
+
+            padding: 14px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #1877f2;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0d65d9;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+
+            cursor: not-allowed;
+        }
+
+        .switch {
+            text-align: center;
+
+            margin-top: 18px;
+
+            color: #666;
+
+            font-size: 14px;
+        }
+
+        .switch span {
+            color: #1877f2;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        #message {
+            text-align: center;
+
+            margin-top: 15px;
+
+            font-size: 14px;
+
+            min-height: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+    </style>
+
+</head>
 
 
-        <input
-            type="text"
-            id="signupName"
-            placeholder="Full name"
-            autocomplete="name"
-        >
+<body>
 
 
-        <input
-            type="email"
-            id="signupEmail"
-            placeholder="Email address"
-            autocomplete="email"
-        >
+<div class="container">
 
 
-        <input
-            type="password"
-            id="signupPassword"
-            placeholder="Password (6+ characters)"
-            autocomplete="new-password"
-        >
+    <!-- LOGO -->
 
+    <div class="logo">
 
-        <button id="signupBtn">
+        <h1>FreeTime</h1>
 
-            Create Account
-
-        </button>
-
-
-        <div class="switch">
-
-            Already have an account?
-
-            <span id="showLoginBtn">
-                Log in
-            </span>
-
-        </div>
+        <p>
+            Enjoy Your Free Time with us.
+        </p>
 
     </div>
 
 
+    <div class="card">
 
-    <!-- MESSAGE -->
 
-    <div id="message"></div>
+        <!-- LOGIN -->
+
+        <div id="loginBox">
+
+            <h2>
+                Welcome Back
+            </h2>
+
+
+            <input
+                type="email"
+                id="loginEmail"
+                placeholder="Email address"
+                autocomplete="email"
+            >
+
+
+            <input
+                type="password"
+                id="loginPassword"
+                placeholder="Password"
+                autocomplete="current-password"
+            >
+
+
+            <button
+                type="button"
+                id="loginBtn"
+                onclick="loginUser()"
+            >
+                Log In
+            </button>
+
+
+            <div class="switch">
+
+                Don't have an account?
+
+                <span
+                    id="showSignupBtn"
+                    onclick="showSignup()"
+                >
+                    Create one
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- SIGNUP -->
+
+        <div
+            id="signupBox"
+            class="hidden"
+        >
+
+            <h2>
+                Create Account
+            </h2>
+
+
+            <input
+                type="text"
+                id="signupName"
+                placeholder="Full name"
+                autocomplete="name"
+            >
+
+
+            <input
+                type="email"
+                id="signupEmail"
+                placeholder="Email address"
+                autocomplete="email"
+            >
+
+
+            <input
+                type="password"
+                id="signupPassword"
+                placeholder="Password (6+ characters)"
+                autocomplete="new-password"
+            >
+
+
+            <button
+                type="button"
+                id="signupBtn"
+                onclick="signupUser()"
+            >
+                Create Account
+            </button>
+
+
+            <div class="switch">
+
+                Already have an account?
+
+                <span
+                    id="showLoginBtn"
+                    onclick="showLogin()"
+                >
+                    Log in
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- MESSAGE -->
+
+        <div id="message"></div>
+
+
+    </div>
 
 
 </div>
 
-</div><!-- ============================ --><!-- FIREBASE LOGIN SYSTEM --><!-- ============================ --><script type="module">
 
+<!-- FREE TIME AUTHENTICATION -->
 
-import {
+<script
+    type="module"
+    src="./login.js"
+></script>
 
-    auth,
 
-    createUserWithEmailAndPassword,
+</body>
 
-    signInWithEmailAndPassword,
-
-    updateProfile,
-
-    onAuthStateChanged
-
-} from "./firebase-config.js";
-
-
-
-/* ==========================
-   ELEMENTS
-========================== */
-
-
-const loginBox =
-    document.getElementById(
-        "loginBox"
-    );
-
-
-const signupBox =
-    document.getElementById(
-        "signupBox"
-    );
-
-
-const message =
-    document.getElementById(
-        "message"
-    );
-
-
-const loginBtn =
-    document.getElementById(
-        "loginBtn"
-    );
-
-
-const signupBtn =
-    document.getElementById(
-        "signupBtn"
-    );
-
-
-
-/* ==========================
-   SHOW SIGNUP
-========================== */
-
-
-document
-    .getElementById(
-        "showSignupBtn"
-    )
-    .addEventListener(
-        "click",
-        function () {
-
-            loginBox
-                .classList
-                .add("hidden");
-
-            signupBox
-                .classList
-                .remove("hidden");
-
-            clearMessage();
-
-        }
-    );
-
-
-
-/* ==========================
-   SHOW LOGIN
-========================== */
-
-
-document
-    .getElementById(
-        "showLoginBtn"
-    )
-    .addEventListener(
-        "click",
-        function () {
-
-            signupBox
-                .classList
-                .add("hidden");
-
-            loginBox
-                .classList
-                .remove("hidden");
-
-            clearMessage();
-
-        }
-    );
-
-
-
-/* ==========================
-   LOGIN
-========================== */
-
-
-loginBtn.addEventListener(
-    "click",
-    async function () {
-
-
-        const email =
-            document
-                .getElementById(
-                    "loginEmail"
-                )
-                .value
-                .trim();
-
-
-        const password =
-            document
-                .getElementById(
-                    "loginPassword"
-                )
-                .value;
-
-
-
-        if (!email || !password) {
-
-            showMessage(
-                "Please enter email and password.",
-                "red"
-            );
-
-            return;
-        }
-
-
-
-        loginBtn.disabled = true;
-
-        loginBtn.innerText =
-            "Logging in...";
-
-
-
-        try {
-
-
-            await
-                signInWithEmailAndPassword(
-                    auth,
-                    email,
-                    password
-                );
-
-
-
-            showMessage(
-                "Login successful!",
-                "green"
-            );
-
-
-
-            setTimeout(
-                function () {
-
-                    window.location.href =
-                        "home.html";
-
-                },
-                800
-            );
-
-
-        }
-
-
-        catch (error) {
-
-
-            console.error(
-                "Login Error:",
-                error
-            );
-
-
-            let errorMessage =
-                "Login failed.";
-
-
-
-            if (
-                error.code ===
-                "auth/invalid-credential"
-            ) {
-
-                errorMessage =
-                    "Incorrect email or password.";
-
-            }
-
-
-            else if (
-                error.code ===
-                "auth/invalid-email"
-            ) {
-
-                errorMessage =
-                    "Please enter a valid email.";
-
-            }
-
-
-            else if (
-                error.code ===
-                "auth/user-not-found"
-            ) {
-
-                errorMessage =
-                    "No account found with this email.";
-
-            }
-
-
-            else if (
-                error.code ===
-                "auth/wrong-password"
-            ) {
-
-                errorMessage =
-                    "Incorrect password.";
-
-            }
-
-
-            else if (
-                error.code ===
-                "auth/too-many-requests"
-            ) {
-
-                errorMessage =
-                    "Too many attempts. Try again later.";
-
-            }
-
-
-
-            showMessage(
-                errorMessage,
-                "red"
-            );
-
-
-            loginBtn.disabled =
-                false;
-
-
-            loginBtn.innerText =
-                "Log In";
-
-        }
-
-    }
-);
-
-
-
-/* ==========================
-   CREATE ACCOUNT
-========================== */
-
-
-signupBtn.addEventListener(
-    "click",
-    async function () {
-
-
-        const name =
-            document
-                .getElementById(
-                    "signupName"
-                )
-                .value
-                .trim();
-
-
-        const email =
-            document
-                .getElementById(
-                    "signupEmail"
-                )
-                .value
-                .trim();
-
-
-        const password =
-            document
-                .getElementById(
-                    "signupPassword"
-                )
-                .value;
-
-
-
-        if (
-            !name ||
-            !email ||
-            !password
-        ) {
-
-            showMessage(
-                "Please fill in all fields.",
-                "red"
-            );
-
-            return;
-        }
-
-
-
-        if (password.length < 6) {
-
-            showMessage(
-                "Password must be at least 6 characters.",
-                "red"
-            );
-
-            return;
-        }
-
-
-
-        signupBtn.disabled =
-            true;
-
-
-        signupBtn.innerText =
-            "Creating Account...";
-
-
-
-        try {
-
-
-            const userCredential =
-                await
-                createUserWithEmailAndPassword(
-                    auth,
-                    email,
-                    password
-                );
-
-
-
-            const user =
-                userCredential.user;
-
-
-
-            await updateProfile(
-                user,
-                {
-                    displayName: name
-                }
-            );
-
-
-
-            showMessage(
-                "Account created successfully!",
-                "green"
-            );
-
-
-
-            setTimeout(
-                function () {
-
-                    window.location.href =
-                        "home.html";
-
-                },
-                800
-            );
-
-
-        }
-
-
-        catch (error) {
-
-
-            console.error(
-                "Signup Error:",
-                error
-            );
-
-
-            let errorMessage =
-                "Account creation failed.";
-
-
-
-            if (
-                error.code ===
-                "auth/email-already-in-use"
-            ) {
-
-                errorMessage =
-                    "This email is already registered.";
-
-            }
-
-
-            else if (
-                error.code ===
-                "auth/invalid-email"
-            ) {
-
-                errorMessage =
-                    "Please enter a valid email.";
-
-            }
-
-
-            else if (
-                error.code ===
-                "auth/weak-password"
-            ) {
-
-                errorMessage =
-                    "Password must be at least 6 characters.";
-
-            }
-
-
-
-            showMessage(
-                errorMessage,
-                "red"
-            );
-
-
-            signupBtn.disabled =
-                false;
-
-
-            signupBtn.innerText =
-                "Create Account";
-
-        }
-
-    }
-);
-
-
-
-/* ==========================
-   MESSAGE
-========================== */
-
-
-function showMessage(
-    text,
-    color
-) {
-
-    message.innerText =
-        text;
-
-    message.style.color =
-        color;
-
-}
-
-
-
-function clearMessage() {
-
-    message.innerText =
-        "";
-
-}
-
-
-
-/* ==========================
-   AUTH STATE
-========================== */
-
-
-onAuthStateChanged(
-    auth,
-    function (user) {
-
-        if (user) {
-
-            console.log(
-                "FreeTime user:",
-                user.email
-            );
-
-        }
-
-    }
-);
-
-
-</script></body></html>
+                </html>
