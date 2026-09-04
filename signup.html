@@ -1,63 +1,81 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Create Account • FreeTime</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="auth.css">
+    <title>Create Account • FreeTime</title>
 
-</head><body><main class="auth-page">
+    <link rel="stylesheet" href="auth.css">
+</head>
 
-    <section class="auth-box">
+<body>
 
-        <div class="brand">
-            <div class="brand-logo">F</div>
-            <h1>FreeTime</h1>
-        </div>
+    <main class="auth-page">
 
-        <h2>Create your account</h2>
-        <p class="subtitle">Join FreeTime and enjoy your time with us.</p>
+        <section class="auth-box">
 
-        <form id="signupForm">
+            <div class="brand">
+                <div class="brand-logo">F</div>
+                <h1>FreeTime</h1>
+            </div>
 
-            <label>Full Name</label>
-            <input
-                type="text"
-                id="signupName"
-                placeholder="Enter your name"
-                required
-            >
+            <h2>Create your account</h2>
 
-            <label>Email</label>
-            <input
-                type="email"
-                id="signupEmail"
-                placeholder="Enter your email"
-                required
-            >
+            <p class="subtitle">
+                Join FreeTime and enjoy your time with us.
+            </p>
 
-            <label>Password</label>
-            <input
-                type="password"
-                id="signupPassword"
-                placeholder="Create a password"
-                minlength="6"
-                required
-            >
+            <form id="signupForm">
 
-            <button type="submit">Create Account</button>
+                <label for="signupName">Full Name</label>
 
-        </form>
+                <input
+                    type="text"
+                    id="signupName"
+                    placeholder="Enter your name"
+                    required
+                >
 
-        <p class="account-text">
-            Already have an account?
-            <a href="login.html">Log in</a>
-        </p>
+                <label for="signupEmail">Email</label>
 
-    </section>
+                <input
+                    type="email"
+                    id="signupEmail"
+                    placeholder="Enter your email"
+                    required
+                >
 
-</main>
+                <label for="signupPassword">Password</label>
 
-<script type="module" src="auth.js"></script>
+                <input
+                    type="password"
+                    id="signupPassword"
+                    placeholder="Create a password"
+                    minlength="6"
+                    required
+                >
+
+                <button type="submit">
+                    Create Account
+                </button>
+
+            </form>
+
+            <p id="message"></p>
+
+            <p class="account-text">
+                Already have an account?
+                <a href="login.html">Log in</a>
+            </p>
+
+        </section>
+
+    </main>
+
+    <script type="module" src="./login.js"></script>
 
 </body>
-</html>
+
+                    </html>
