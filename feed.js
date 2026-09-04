@@ -16,10 +16,10 @@ import { auth, app } from "./firebase.js";
 
 const db = getFirestore(app);
 
-const postsQuery = query(
-    collection(db, "posts"),
-    orderBy("createdAt", "desc")
-);
+
+/* ================================
+   HTML SECURITY
+================================ */
 
 function escapeHTML(text) {
     const div = document.createElement("div");
@@ -27,7 +27,35 @@ function escapeHTML(text) {
     return div.innerHTML;
 }
 
+
+/* ================================
+   USER INFO
+================================ */
+
+function getUserName(user) {
+    if (!user) return "FreeTime User";
+
+    return user.displayName ||
+           user.email?.split("@")[0] ||
+           "FreeTime User";
+}
+
+
+function getUserPhoto(user) {
+    if (user && user.photoURL) {
+        return user.photoURL;
+    }
+
+    return "";
+}
+
+
+/* ================================
+   LIKE SYSTEM
+================================ */
+
 async function getLikeCount(postId) {
+
     const snapshot = await getDocs(
         collection(db, "posts", postId, "likes")
     );
@@ -35,18 +63,12 @@ async function getLikeCount(postId) {
     return snapshot.size;
 }
 
+
 async function hasUserLiked(postId) {
+
     const user = auth.currentUser;
 
     if (!user) return false;
-
-    const likeRef = doc(
-        db,
-        "posts",
-        postId,
-        "likes",
-        user.uid
-    );
 
     const snapshot = await getDocs(
         collection(db, "posts", postId, "likes")
@@ -57,7 +79,12 @@ async function hasUserLiked(postId) {
     );
 }
 
-async function toggleLike(postId, button, countElement) {
+
+async function toggleLike(
+    postId,
+    button,
+    countElement
+) {
 
     const user = auth.currentUser;
 
@@ -94,56 +121,98 @@ async function toggleLike(postId, button, countElement) {
             button.classList.add("liked");
         }
 
-        const count = await getLikeCount(postId);
+        const count =
+            await getLikeCount(postId);
 
         countElement.textContent =
             `${count} ${count === 1 ? "Like" : "Likes"}`;
 
     } catch (error) {
 
-        console.error("Like Error:", error);
+        console.error(
+            "Like Error:",
+            error
+        );
 
-        alert("Unable to update Like.");
+        alert(
+            "Unable to update Like."
+        );
     }
 }
 
-async function loadComments(postId, commentsContainer) {
+
+/* ================================
+   COMMENT SYSTEM
+================================ */
+
+async function loadComments(
+    postId,
+    commentsContainer
+) {
 
     const commentsQuery = query(
-        collection(db, "posts", postId, "comments"),
-        orderBy("createdAt", "asc")
+        collection(
+            db,
+            "posts",
+            postId,
+            "comments"
+        ),
+        orderBy(
+            "createdAt",
+            "asc"
+        )
     );
 
-    onSnapshot(commentsQuery, (snapshot) => {
+    onSnapshot(
+        commentsQuery,
+        (snapshot) => {
 
-        commentsContainer.innerHTML = "";
+            commentsContainer.innerHTML = "";
 
-        snapshot.forEach((commentDoc) => {
+            snapshot.forEach(
+                (commentDoc) => {
 
-            const comment = commentDoc.data();
+                    const comment =
+                        commentDoc.data();
 
-            const item = document.createElement("div");
+                    const item =
+                        document.createElement("div");
 
-            item.className = "freetime-comment";
+                    item.className =
+                        "freetime-comment";
 
-            item.innerHTML = `
-                <div class="freetime-comment-avatar">
-                    U
-                </div>
+                    item.innerHTML = `
+                        <div class="freetime-comment-avatar">
+                            U
+                        </div>
 
-                <div class="freetime-comment-body">
-                    <strong>FreeTime User</strong>
-                    <p>${escapeHTML(comment.text)}</p>
-                </div>
-            `;
+                        <div class="freetime-comment-body">
 
-            commentsContainer.appendChild(item);
-        });
+                            <strong>
+                                FreeTime User
+                            </strong>
 
-    });
+                            <p>
+                                ${escapeHTML(comment.text)}
+                            </p>
+
+                        </div>
+                    `;
+
+                    commentsContainer.appendChild(
+                        item
+                    );
+                }
+            );
+        }
+    );
 }
 
-async function addComment(postId, input, commentsContainer) {
+
+async function addComment(
+    postId,
+    input
+) {
 
     const user = auth.currentUser;
 
@@ -152,21 +221,38 @@ async function addComment(postId, input, commentsContainer) {
         return;
     }
 
-    const text = input.value.trim();
+    const text =
+        input.value.trim();
 
     if (!text) {
-        alert("Please write a comment.");
+        alert(
+            "Please write a comment."
+        );
         return;
     }
 
     try {
 
         await addDoc(
-            collection(db, "posts", postId, "comments"),
+            collection(
+                db,
+                "posts",
+                postId,
+                "comments"
+            ),
             {
                 uid: user.uid,
+
+                name:
+                    getUserName(user),
+
+                photoURL:
+                    getUserPhoto(user),
+
                 text: text,
-                createdAt: serverTimestamp()
+
+                createdAt:
+                    serverTimestamp()
             }
         );
 
@@ -174,73 +260,163 @@ async function addComment(postId, input, commentsContainer) {
 
     } catch (error) {
 
-        console.error("Comment Error:", error);
+        console.error(
+            "Comment Error:",
+            error
+        );
 
-        alert("Unable to post comment.");
+        alert(
+            "Unable to post comment."
+        );
     }
 }
 
+
+/* ================================
+   POST CARD
+================================ */
+
 function createPostCard(post) {
 
-    const card = document.createElement("article");
+    const card =
+        document.createElement("article");
 
-    card.className = "freetime-post-card";
+    card.className =
+        "freetime-post-card";
+
+
+    /* Background */
 
     if (post.background) {
-        card.style.background = post.background;
+
+        card.style.background =
+            post.background;
     }
 
-    const time = post.createdAt
-        ? post.createdAt.toDate().toLocaleString()
+
+    /* User */
+
+    const user =
+        auth.currentUser;
+
+    const userName =
+        post.name ||
+        getUserName(user);
+
+    const userPhoto =
+        post.photoURL ||
+        getUserPhoto(user);
+
+
+    const avatarHTML =
+        userPhoto
+
+        ? `
+            <img
+                src="${escapeHTML(userPhoto)}"
+                alt="Profile"
+                class="freetime-profile-photo"
+            >
+          `
+
+        : `
+            <div class="freetime-avatar">
+                ${escapeHTML(
+                    userName
+                        .charAt(0)
+                        .toUpperCase()
+                )}
+            </div>
+          `;
+
+
+    /* Time */
+
+    const time =
+        post.createdAt &&
+        typeof post.createdAt.toDate === "function"
+
+        ? post.createdAt
+            .toDate()
+            .toLocaleString()
+
         : "Just now";
 
+
     card.innerHTML = `
+
         <div class="freetime-post-header">
 
-            <div class="freetime-avatar">
-                <span>U</span>
-            </div>
+            ${avatarHTML}
 
             <div>
-                <strong>FreeTime User</strong>
-                <small>${time}</small>
+
+                <strong>
+                    ${escapeHTML(userName)}
+                </strong>
+
+                <small>
+                    ${escapeHTML(time)}
+                </small>
+
             </div>
 
         </div>
 
+
         <div class="freetime-post-text">
+
             ${escapeHTML(post.text)}
+
         </div>
 
+
         <div class="freetime-like-count">
+
             <span class="like-count">
                 Loading...
             </span>
+
         </div>
+
 
         <div class="freetime-post-actions">
 
             <button
                 type="button"
                 class="like-button">
+
                 ❤️ Like
+
             </button>
+
 
             <button
                 type="button"
                 class="comment-button">
+
                 💬 Comment
+
             </button>
 
-            <button type="button">
+
+            <button
+                type="button"
+                class="share-button">
+
                 ↗ Share
+
             </button>
 
         </div>
 
+
         <div class="freetime-comments-section">
 
-            <div class="freetime-comments-list"></div>
+            <div
+                class="freetime-comments-list">
+            </div>
+
 
             <div class="freetime-comment-form">
 
@@ -251,153 +427,298 @@ function createPostCard(post) {
                     maxlength="500"
                 >
 
+
                 <button
                     type="button"
                     class="comment-submit">
+
                     Post
+
                 </button>
 
             </div>
 
         </div>
+
     `;
 
+
+    /* Elements */
+
     const likeButton =
-        card.querySelector(".like-button");
+        card.querySelector(
+            ".like-button"
+        );
 
     const countElement =
-        card.querySelector(".like-count");
+        card.querySelector(
+            ".like-count"
+        );
 
     const commentButton =
-        card.querySelector(".comment-button");
+        card.querySelector(
+            ".comment-button"
+        );
 
     const commentsSection =
-        card.querySelector(".freetime-comments-section");
+        card.querySelector(
+            ".freetime-comments-section"
+        );
 
     const commentsContainer =
-        card.querySelector(".freetime-comments-list");
+        card.querySelector(
+            ".freetime-comments-list"
+        );
 
     const input =
-        card.querySelector(".comment-input");
+        card.querySelector(
+            ".comment-input"
+        );
 
     const submitButton =
-        card.querySelector(".comment-submit");
-
-    likeButton.addEventListener("click", () => {
-
-        toggleLike(
-            post.id,
-            likeButton,
-            countElement
+        card.querySelector(
+            ".comment-submit"
         );
 
-    });
 
-    commentButton.addEventListener("click", () => {
+    /* Like */
 
-        commentsSection.classList.toggle("show");
+    likeButton.addEventListener(
+        "click",
+        () => {
 
-        if (commentsSection.classList.contains("show")) {
-            input.focus();
-        }
-
-    });
-
-    submitButton.addEventListener("click", () => {
-
-        addComment(
-            post.id,
-            input,
-            commentsContainer
-        );
-
-    });
-
-    input.addEventListener("keydown", (event) => {
-
-        if (event.key === "Enter") {
-
-            addComment(
+            toggleLike(
                 post.id,
-                input,
-                commentsContainer
+                likeButton,
+                countElement
             );
 
         }
+    );
 
-    });
 
-    getLikeCount(post.id).then(count => {
+    /* Comment */
 
-        countElement.textContent =
-            `${count} ${count === 1 ? "Like" : "Likes"}`;
+    commentButton.addEventListener(
+        "click",
+        () => {
 
-    });
+            commentsSection
+                .classList
+                .toggle("show");
+
+            if (
+                commentsSection
+                    .classList
+                    .contains("show")
+            ) {
+
+                input.focus();
+            }
+        }
+    );
+
+
+    /* Submit Comment */
+
+    submitButton.addEventListener(
+        "click",
+        () => {
+
+            addComment(
+                post.id,
+                input
+            );
+
+        }
+    );
+
+
+    /* Enter */
+
+    input.addEventListener(
+        "keydown",
+        (event) => {
+
+            if (
+                event.key === "Enter"
+            ) {
+
+                addComment(
+                    post.id,
+                    input
+                );
+            }
+        }
+    );
+
+
+    /* Like Count */
+
+    getLikeCount(
+        post.id
+    ).then(
+        (count) => {
+
+            countElement.textContent =
+                `${count} ${
+                    count === 1
+                        ? "Like"
+                        : "Likes"
+                }`;
+        }
+    );
+
+
+    /* Comments */
 
     loadComments(
         post.id,
         commentsContainer
     );
 
+
     return card;
 }
+
+
+/* ================================
+   FEED CONTAINER
+================================ */
 
 function findFeedContainer() {
 
     const selectors = [
+
         "#postsContainer",
+
         "#feed",
+
         "#postFeed",
+
         ".posts-container",
+
         ".post-feed",
+
         ".feed"
+
     ];
 
-    for (const selector of selectors) {
+
+    for (
+        const selector of selectors
+    ) {
 
         const element =
-            document.querySelector(selector);
+            document.querySelector(
+                selector
+            );
 
         if (element) {
             return element;
         }
     }
 
+
     return null;
 }
 
-onSnapshot(postsQuery, (snapshot) => {
 
-    const feed = findFeedContainer();
+/* ================================
+   LOAD POSTS
+================================ */
 
-    if (!feed) {
+function loadPosts() {
 
-        console.warn(
-            "FreeTime: postsContainer not found."
-        );
+    const postsQuery = query(
 
-        return;
-    }
+        collection(
+            db,
+            "posts"
+        ),
 
-    feed.innerHTML = "";
-
-    snapshot.forEach((docSnapshot) => {
-
-        const post = {
-            id: docSnapshot.id,
-            ...docSnapshot.data()
-        };
-
-        feed.appendChild(
-            createPostCard(post)
-        );
-    });
-
-}, (error) => {
-
-    console.error(
-        "FreeTime Feed Error:",
-        error
+        orderBy(
+            "createdAt",
+            "desc"
+        )
     );
 
-});
+
+    onSnapshot(
+        postsQuery,
+        (snapshot) => {
+
+            const feed =
+                findFeedContainer();
+
+
+            if (!feed) {
+
+                console.warn(
+                    "FreeTime: postsContainer not found."
+                );
+
+                return;
+            }
+
+
+            feed.innerHTML = "";
+
+
+            snapshot.forEach(
+                (docSnapshot) => {
+
+                    const post = {
+
+                        id:
+                            docSnapshot.id,
+
+                        ...docSnapshot.data()
+
+                    };
+
+
+                    feed.appendChild(
+                        createPostCard(
+                            post
+                        )
+                    );
+
+                }
+            );
+
+        },
+
+
+        (error) => {
+
+            console.error(
+                "FreeTime Feed Error:",
+                error
+            );
+
+        }
+    );
+}
+
+
+/* ================================
+   AUTH STATE
+================================ */
+
+auth.onAuthStateChanged(
+    (user) => {
+
+        if (user) {
+
+            console.log(
+                "FreeTime logged in:",
+                getUserName(user)
+            );
+
+            loadPosts();
+
+        }
+
+    }
+);
