@@ -7,7 +7,9 @@ import {
     doc,
     setDoc,
     deleteDoc,
-    getDocs
+    getDocs,
+    addDoc,
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 import { auth, app } from "./firebase.js";
@@ -26,11 +28,11 @@ function escapeHTML(text) {
 }
 
 async function getLikeCount(postId) {
-    const likesSnapshot = await getDocs(
+    const snapshot = await getDocs(
         collection(db, "posts", postId, "likes")
     );
 
-    return likesSnapshot.size;
+    return snapshot.size;
 }
 
 async function hasUserLiked(postId) {
@@ -86,7 +88,7 @@ async function toggleLike(postId, button, countElement) {
 
             await setDoc(likeRef, {
                 uid: user.uid,
-                createdAt: new Date()
+                createdAt: serverTimestamp()
             });
 
             button.classList.add("liked");
@@ -102,6 +104,79 @@ async function toggleLike(postId, button, countElement) {
         console.error("Like Error:", error);
 
         alert("Unable to update Like.");
+    }
+}
+
+async function loadComments(postId, commentsContainer) {
+
+    const commentsQuery = query(
+        collection(db, "posts", postId, "comments"),
+        orderBy("createdAt", "asc")
+    );
+
+    onSnapshot(commentsQuery, (snapshot) => {
+
+        commentsContainer.innerHTML = "";
+
+        snapshot.forEach((commentDoc) => {
+
+            const comment = commentDoc.data();
+
+            const item = document.createElement("div");
+
+            item.className = "freetime-comment";
+
+            item.innerHTML = `
+                <div class="freetime-comment-avatar">
+                    U
+                </div>
+
+                <div class="freetime-comment-body">
+                    <strong>FreeTime User</strong>
+                    <p>${escapeHTML(comment.text)}</p>
+                </div>
+            `;
+
+            commentsContainer.appendChild(item);
+        });
+
+    });
+}
+
+async function addComment(postId, input, commentsContainer) {
+
+    const user = auth.currentUser;
+
+    if (!user) {
+        alert("Please login first.");
+        return;
+    }
+
+    const text = input.value.trim();
+
+    if (!text) {
+        alert("Please write a comment.");
+        return;
+    }
+
+    try {
+
+        await addDoc(
+            collection(db, "posts", postId, "comments"),
+            {
+                uid: user.uid,
+                text: text,
+                createdAt: serverTimestamp()
+            }
+        );
+
+        input.value = "";
+
+    } catch (error) {
+
+        console.error("Comment Error:", error);
+
+        alert("Unable to post comment.");
     }
 }
 
@@ -138,7 +213,7 @@ function createPostCard(post) {
         </div>
 
         <div class="freetime-like-count">
-            <span id="like-count-${post.id}">
+            <span class="like-count">
                 Loading...
             </span>
         </div>
@@ -147,12 +222,13 @@ function createPostCard(post) {
 
             <button
                 type="button"
-                class="like-button"
-                data-post-id="${post.id}">
+                class="like-button">
                 ❤️ Like
             </button>
 
-            <button type="button">
+            <button
+                type="button"
+                class="comment-button">
                 💬 Comment
             </button>
 
@@ -161,13 +237,51 @@ function createPostCard(post) {
             </button>
 
         </div>
+
+        <div class="freetime-comments-section">
+
+            <div class="freetime-comments-list"></div>
+
+            <div class="freetime-comment-form">
+
+                <input
+                    type="text"
+                    class="comment-input"
+                    placeholder="Write a comment..."
+                    maxlength="500"
+                >
+
+                <button
+                    type="button"
+                    class="comment-submit">
+                    Post
+                </button>
+
+            </div>
+
+        </div>
     `;
 
     const likeButton =
         card.querySelector(".like-button");
 
     const countElement =
-        card.querySelector(`#like-count-${post.id}`);
+        card.querySelector(".like-count");
+
+    const commentButton =
+        card.querySelector(".comment-button");
+
+    const commentsSection =
+        card.querySelector(".freetime-comments-section");
+
+    const commentsContainer =
+        card.querySelector(".freetime-comments-list");
+
+    const input =
+        card.querySelector(".comment-input");
+
+    const submitButton =
+        card.querySelector(".comment-submit");
 
     likeButton.addEventListener("click", () => {
 
@@ -179,12 +293,51 @@ function createPostCard(post) {
 
     });
 
+    commentButton.addEventListener("click", () => {
+
+        commentsSection.classList.toggle("show");
+
+        if (commentsSection.classList.contains("show")) {
+            input.focus();
+        }
+
+    });
+
+    submitButton.addEventListener("click", () => {
+
+        addComment(
+            post.id,
+            input,
+            commentsContainer
+        );
+
+    });
+
+    input.addEventListener("keydown", (event) => {
+
+        if (event.key === "Enter") {
+
+            addComment(
+                post.id,
+                input,
+                commentsContainer
+            );
+
+        }
+
+    });
+
     getLikeCount(post.id).then(count => {
 
         countElement.textContent =
             `${count} ${count === 1 ? "Like" : "Likes"}`;
 
     });
+
+    loadComments(
+        post.id,
+        commentsContainer
+    );
 
     return card;
 }
@@ -235,9 +388,9 @@ onSnapshot(postsQuery, (snapshot) => {
             ...docSnapshot.data()
         };
 
-        const card = createPostCard(post);
-
-        feed.appendChild(card);
+        feed.appendChild(
+            createPostCard(post)
+        );
     });
 
 }, (error) => {
