@@ -21,109 +21,176 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-/* ========================================
-   FIRESTORE
-======================================== */
-
 const db = getFirestore();
-
-
-/* ========================================
-   ELEMENTS
-======================================== */
-
-const postsContainer =
-    document.getElementById("postsContainer");
-
-const postText =
-    document.getElementById("postText");
-
-const publishPostBtn =
-    document.getElementById("publishPostBtn");
-
-const postStatus =
-    document.getElementById("postStatus");
-
-
-/* ========================================
-   CURRENT USER
-======================================== */
 
 let currentUser = null;
 
+let selectedBackground = "bg-1";
 
-/* ========================================
-   LOGIN
-======================================== */
+
+/* =========================
+   AUTH
+========================= */
 
 onAuthStateChanged(auth, (user) => {
 
     if (!user) {
-        window.location.href = "login.html";
+
+        window.location.href =
+            "login.html";
+
         return;
     }
 
     currentUser = user;
 
-    const userName =
-        user.displayName || "FreeTime User";
 
-    const userEmail =
+    const name =
+        user.displayName ||
+        user.email?.split("@")[0] ||
+        "FreeTime User";
+
+
+    const email =
         user.email || "";
 
 
-    const nameElement =
+    const userName =
         document.getElementById("userName");
 
-    if (nameElement) {
-        nameElement.textContent = userName;
-    }
-
-
-    const emailElement =
+    const userEmail =
         document.getElementById("userEmail");
 
-    if (emailElement) {
-        emailElement.textContent = userEmail;
+
+    if (userName) {
+
+        userName.textContent =
+            name;
+
     }
 
 
-    const firstLetter =
-        userName.trim().charAt(0).toUpperCase() || "U";
+    if (userEmail) {
 
+        userEmail.textContent =
+            email;
 
-    const welcomeAvatar =
-        document.getElementById("welcomeAvatar");
-
-    if (welcomeAvatar) {
-        welcomeAvatar.textContent = firstLetter;
     }
 
 
-    const createAvatar =
-        document.getElementById("createAvatar");
-
-    if (createAvatar) {
-        createAvatar.textContent = firstLetter;
-    }
+    const avatarURL =
+        user.photoURL ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
 
 
-    const headerAvatar =
-        document.getElementById("headerAvatar");
+    [
+        "headerAvatar",
+        "welcomeAvatar",
+        "createAvatar"
+    ].forEach(id => {
 
-    if (headerAvatar) {
-        headerAvatar.textContent = firstLetter;
-    }
+        const img =
+            document.getElementById(id);
 
+        if (img) {
+
+            img.src =
+                avatarURL;
+
+        }
+
+    });
+
+
+    setupBackgroundSelector();
 
     loadPosts();
 
 });
 
 
-/* ========================================
+/* =========================
+   BACKGROUND SELECTOR
+========================= */
+
+function setupBackgroundSelector() {
+
+    const options =
+        document.querySelectorAll(
+            ".bg-option"
+        );
+
+
+    options.forEach(option => {
+
+        option.addEventListener(
+            "click",
+            () => {
+
+                options.forEach(item => {
+
+                    item.classList.remove(
+                        "active"
+                    );
+
+                });
+
+
+                option.classList.add(
+                    "active"
+                );
+
+
+                selectedBackground =
+                    option.dataset.background;
+
+
+                updatePostPreview();
+
+            }
+        );
+
+    });
+
+}
+
+
+/* =========================
+   POST PREVIEW
+========================= */
+
+function updatePostPreview() {
+
+    const textarea =
+        document.getElementById(
+            "postText"
+        );
+
+    if (!textarea) return;
+
+
+    textarea.classList.remove(
+        "bg-1",
+        "bg-2",
+        "bg-3",
+        "bg-4",
+        "bg-5",
+        "bg-6",
+        "bg-7"
+    );
+
+}
+
+
+/* =========================
    CREATE POST
-======================================== */
+========================= */
+
+const publishPostBtn =
+    document.getElementById(
+        "publishPostBtn"
+    );
+
 
 if (publishPostBtn) {
 
@@ -131,54 +198,73 @@ if (publishPostBtn) {
         "click",
         async () => {
 
-            if (!currentUser) {
-                return;
-            }
+            if (!currentUser) return;
+
+
+            const postText =
+                document.getElementById(
+                    "postText"
+                );
+
+
+            const postStatus =
+                document.getElementById(
+                    "postStatus"
+                );
 
 
             const text =
-                postText.value.trim();
+                postText?.value.trim();
 
 
             if (!text) {
 
-                showStatus(
-                    "Please write something first.",
-                    false
-                );
+                if (postStatus) {
+
+                    postStatus.textContent =
+                        "Please write something.";
+
+                }
 
                 return;
             }
 
 
+            publishPostBtn.disabled =
+                true;
+
+
             try {
 
-                publishPostBtn.disabled = true;
-
-                publishPostBtn.textContent =
-                    "Posting...";
-
-
                 await addDoc(
-                    collection(db, "posts"),
+                    collection(
+                        db,
+                        "posts"
+                    ),
                     {
 
                         text: text,
 
-                        uid: currentUser.uid,
+                        uid:
+                            currentUser.uid,
 
                         userName:
                             currentUser.displayName ||
+                            currentUser.email?.split("@")[0] ||
                             "FreeTime User",
 
                         userEmail:
-                            currentUser.email || "",
+                            currentUser.email ||
+                            "",
 
                         likes: 0,
 
                         comments: 0,
 
                         shares: 0,
+
+                        background:
+                            selectedBackground,
 
                         createdAt:
                             serverTimestamp()
@@ -190,10 +276,24 @@ if (publishPostBtn) {
                 postText.value = "";
 
 
-                showStatus(
-                    "Post published successfully! 🎉",
-                    true
-                );
+                if (postStatus) {
+
+                    postStatus.textContent =
+                        "Post published successfully!";
+
+                }
+
+
+                setTimeout(() => {
+
+                    if (postStatus) {
+
+                        postStatus.textContent =
+                            "";
+
+                    }
+
+                }, 2500);
 
 
             } catch (error) {
@@ -203,41 +303,52 @@ if (publishPostBtn) {
                     error
                 );
 
-                showStatus(
-                    "Could not publish the post.",
-                    false
-                );
+
+                if (postStatus) {
+
+                    postStatus.textContent =
+                        "Failed to publish post.";
+
+                }
+
+            } finally {
+
+                publishPostBtn.disabled =
+                    false;
 
             }
 
-
-            publishPostBtn.disabled = false;
-
-            publishPostBtn.textContent =
-                "Post";
-
         }
-
     );
 
 }
 
 
-/* ========================================
+/* =========================
    LOAD POSTS
-======================================== */
+========================= */
 
 function loadPosts() {
 
-    if (!postsContainer) {
-        return;
-    }
+    const postsContainer =
+        document.getElementById(
+            "postsContainer"
+        );
+
+
+    if (!postsContainer) return;
 
 
     const postsQuery =
         query(
-            collection(db, "posts"),
-            orderBy("createdAt", "desc")
+            collection(
+                db,
+                "posts"
+            ),
+            orderBy(
+                "createdAt",
+                "desc"
+            )
         );
 
 
@@ -245,189 +356,159 @@ function loadPosts() {
         postsQuery,
         (snapshot) => {
 
-            postsContainer.innerHTML = "";
-
-
-            if (snapshot.empty) {
-
-                postsContainer.innerHTML = `
-
-                    <div
-                        style="
-                            background:white;
-                            padding:25px;
-                            text-align:center;
-                            border-radius:14px;
-                            color:#6b7280;
-                            margin-bottom:15px;
-                        "
-                    >
-                        No posts yet.
-                        <br><br>
-                        Be the first to post! 🎉
-                    </div>
-
-                `;
-
-                return;
-            }
+            postsContainer.innerHTML =
+                "";
 
 
             snapshot.forEach(
-                (postSnapshot) => {
+                postDoc => {
 
-                    const post =
-                        postSnapshot.data();
-
-                    const postId =
-                        postSnapshot.id;
-
-
-                    createPostElement(
-                        postId,
-                        post
+                    renderPost(
+                        postDoc.id,
+                        postDoc.data(),
+                        postsContainer
                     );
 
                 }
             );
 
         },
-
-        (error) => {
+        error => {
 
             console.error(
-                "Loading posts error:",
+                "Posts error:",
                 error
             );
 
-
-            postsContainer.innerHTML = `
-
-                <div
-                    style="
-                        background:#fee2e2;
-                        color:#dc2626;
-                        padding:15px;
-                        border-radius:12px;
-                        text-align:center;
-                    "
-                >
-                    Could not load posts.
-                    <br>
-                    Check your Firestore settings.
-                </div>
-
-            `;
-
         }
-
     );
 
 }
 
 
-/* ========================================
-   CREATE POST ELEMENT
-======================================== */
+/* =========================
+   RENDER POST
+========================= */
 
-function createPostElement(
+function renderPost(
     postId,
-    post
+    post,
+    container
 ) {
-
-    const article =
-        document.createElement("article");
-
-    article.className = "post";
-
 
     const userName =
         post.userName ||
         "FreeTime User";
 
 
-    const firstLetter =
-        userName
-            .trim()
-            .charAt(0)
-            .toUpperCase() || "U";
+    const avatar =
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random`;
 
 
-    const likes =
-        Number(post.likes || 0);
+    const article =
+        document.createElement(
+            "article"
+        );
 
 
-    const comments =
-        Number(post.comments || 0);
+    article.className =
+        "post-card";
 
 
-    const shares =
-        Number(post.shares || 0);
+    const hasBackground =
+        post.background &&
+        post.background.startsWith(
+            "bg-"
+        );
 
 
     article.innerHTML = `
 
         <div class="post-header">
 
-            <div class="post-avatar">
-                ${escapeHTML(firstLetter)}
-            </div>
+            <img
+                class="post-avatar"
+                src="${avatar}"
+                alt="${escapeHTML(userName)}"
+            >
 
             <div>
 
-                <div class="post-user">
+                <strong>
                     ${escapeHTML(userName)}
-                </div>
+                </strong>
 
-                <div class="post-time">
-                    ${formatTime(post.createdAt)}
-                </div>
+                <small>
+                    ${formatDate(post.createdAt)}
+                </small>
 
             </div>
 
         </div>
 
 
-        <div class="post-content">
-            ${escapeHTML(post.text || "")}
+        <div
+            class="post-content ${
+                hasBackground
+                    ? `text-background ${post.background}`
+                    : ""
+            }"
+        >
+
+            <p>
+                ${escapeHTML(post.text || "")}
+            </p>
+
         </div>
 
 
         <div class="post-stats">
 
-            <span class="likes-count">
-                ${likes} Likes
+            <span>
+                ❤️
+                <span id="likes-${postId}">
+                    ${post.likes || 0}
+                </span>
             </span>
 
             <span>
-                ${comments} Comments ·
-                ${shares} Shares
+                💬
+                <span id="comments-${postId}">
+                    ${post.comments || 0}
+                </span>
+            </span>
+
+            <span>
+                ↗️
+                <span id="shares-${postId}">
+                    ${post.shares || 0}
+                </span>
             </span>
 
         </div>
 
 
-        <div class="post-buttons">
+        <div class="post-actions">
 
             <button
-                type="button"
                 class="like-btn"
+                id="like-btn-${postId}"
             >
-                ❤️ Like
+                🤍 Like
             </button>
 
 
             <button
-                type="button"
-                class="comment-btn"
+                class="comment-toggle-btn"
+                data-post-id="${postId}"
             >
                 💬 Comment
             </button>
 
 
             <button
-                type="button"
                 class="share-btn"
+                data-post-id="${postId}"
             >
                 ↗️ Share
             </button>
@@ -435,61 +516,29 @@ function createPostElement(
         </div>
 
 
-        <!-- COMMENT AREA -->
-
         <div
-            class="comment-area"
-            style="
-                display:none;
-                padding:10px 14px 14px;
-                border-top:1px solid #eeeeee;
-            "
+            class="comments-area"
+            id="comments-area-${postId}"
+            style="display:none;"
         >
 
             <div
                 class="comments-list"
-                style="
-                    margin-bottom:10px;
-                "
+                id="comments-list-${postId}"
             ></div>
 
 
-            <div
-                style="
-                    display:flex;
-                    gap:7px;
-                    align-items:center;
-                "
-            >
+            <div class="comment-box">
 
                 <input
                     type="text"
-                    class="comment-input"
+                    id="comment-input-${postId}"
                     placeholder="Write a comment..."
-                    style="
-                        flex:1;
-                        border:none;
-                        outline:none;
-                        background:#f0f2f5;
-                        border-radius:20px;
-                        padding:10px 13px;
-                        font-size:13px;
-                    "
                 >
 
-
                 <button
-                    type="button"
-                    class="comment-submit"
-                    style="
-                        border:none;
-                        background:#1877f2;
-                        color:white;
-                        padding:9px 12px;
-                        border-radius:8px;
-                        cursor:pointer;
-                        font-weight:bold;
-                    "
+                    class="comment-send-btn"
+                    data-post-id="${postId}"
                 >
                     Post
                 </button>
@@ -501,37 +550,57 @@ function createPostElement(
     `;
 
 
-    /* ====================================
-       LIKE SYSTEM
-    ==================================== */
-
-    const likeButton =
-        article.querySelector(".like-btn");
+    container.appendChild(
+        article
+    );
 
 
-    const likesCount =
-        article.querySelector(".likes-count");
+    setupLike(postId);
+
+    setupCommentToggle(postId);
+
+    setupCommentSend(postId);
+
+    setupShare(postId);
+
+    loadComments(postId);
+
+}
+
+
+/* =========================
+   LIKE
+========================= */
+
+function setupLike(postId) {
+
+    const button =
+        document.getElementById(
+            `like-btn-${postId}`
+        );
+
+
+    if (!button) return;
 
 
     checkUserLike(
         postId,
-        likeButton
+        button
     );
 
 
-    likeButton.addEventListener(
+    button.addEventListener(
         "click",
         async () => {
 
-            if (!currentUser) {
-                return;
-            }
+            if (!currentUser) return;
+
+
+            button.disabled =
+                true;
 
 
             try {
-
-                likeButton.disabled = true;
-
 
                 const likeRef =
                     doc(
@@ -544,7 +613,9 @@ function createPostElement(
 
 
                 const likeSnapshot =
-                    await getDoc(likeRef);
+                    await getDoc(
+                        likeRef
+                    );
 
 
                 const postRef =
@@ -555,14 +626,13 @@ function createPostElement(
                     );
 
 
-                if (likeSnapshot.exists()) {
+                if (
+                    likeSnapshot.exists()
+                ) {
 
-                    /*
-                     USER ALREADY LIKED
-                     REMOVE LIKE
-                    */
-
-                    await deleteDoc(likeRef);
+                    await deleteDoc(
+                        likeRef
+                    );
 
 
                     await updateDoc(
@@ -574,18 +644,11 @@ function createPostElement(
                     );
 
 
-                    likeButton.textContent =
-                        "❤️ Like";
-
-                    likeButton.style.color =
-                        "#4b5563";
+                    button.innerHTML =
+                        "🤍 Like";
 
 
                 } else {
-
-                    /*
-                     NEW LIKE
-                    */
 
                     await setDoc(
                         likeRef,
@@ -593,6 +656,11 @@ function createPostElement(
 
                             uid:
                                 currentUser.uid,
+
+                            userName:
+                                currentUser.displayName ||
+                                currentUser.email?.split("@")[0] ||
+                                "FreeTime User",
 
                             createdAt:
                                 serverTimestamp()
@@ -610,11 +678,8 @@ function createPostElement(
                     );
 
 
-                    likeButton.textContent =
+                    button.innerHTML =
                         "❤️ Liked";
-
-                    likeButton.style.color =
-                        "#1877f2";
 
                 }
 
@@ -626,185 +691,29 @@ function createPostElement(
                     error
                 );
 
-            }
+            } finally {
 
-
-            likeButton.disabled = false;
-
-        }
-    );
-
-
-    /* ====================================
-       SHARE
-    ==================================== */
-
-    const shareButton =
-        article.querySelector(".share-btn");
-
-
-    shareButton.addEventListener(
-        "click",
-        async () => {
-
-            try {
-
-                const postRef =
-                    doc(
-                        db,
-                        "posts",
-                        postId
-                    );
-
-
-                await updateDoc(
-                    postRef,
-                    {
-                        shares:
-                            increment(1)
-                    }
-                );
-
-
-                if (
-                    navigator.clipboard
-                ) {
-
-                    await navigator.clipboard.writeText(
-                        window.location.href
-                    );
-
-                    alert(
-                        "Post link copied! 🔗"
-                    );
-
-                }
-
-
-            } catch (error) {
-
-                console.error(
-                    "Share error:",
-                    error
-                );
+                button.disabled =
+                    false;
 
             }
 
         }
     );
-
-
-    /* ====================================
-       COMMENT BUTTON
-    ==================================== */
-
-    const commentButton =
-        article.querySelector(
-            ".comment-btn"
-        );
-
-
-    const commentArea =
-        article.querySelector(
-            ".comment-area"
-        );
-
-
-    commentButton.addEventListener(
-        "click",
-        () => {
-
-            if (
-                commentArea.style.display ===
-                "none"
-            ) {
-
-                commentArea.style.display =
-                    "block";
-
-                loadComments(
-                    postId,
-                    article
-                );
-
-            } else {
-
-                commentArea.style.display =
-                    "none";
-
-            }
-
-        }
-    );
-
-
-    /* ====================================
-       SUBMIT COMMENT
-    ==================================== */
-
-    const commentInput =
-        article.querySelector(
-            ".comment-input"
-        );
-
-
-    const commentSubmit =
-        article.querySelector(
-            ".comment-submit"
-        );
-
-
-    commentSubmit.addEventListener(
-        "click",
-        async () => {
-
-            await submitComment(
-                postId,
-                commentInput
-            );
-
-        }
-    );
-
-
-    commentInput.addEventListener(
-        "keydown",
-        async (event) => {
-
-            if (
-                event.key === "Enter"
-            ) {
-
-                event.preventDefault();
-
-                await submitComment(
-                    postId,
-                    commentInput
-                );
-
-            }
-
-        }
-    );
-
-
-    postsContainer.appendChild(article);
 
 }
 
 
-/* ========================================
-   CHECK USER LIKE
-======================================== */
+/* =========================
+   CHECK LIKE
+========================= */
 
 async function checkUserLike(
     postId,
-    likeButton
+    button
 ) {
 
-    if (!currentUser) {
-        return;
-    }
+    if (!currentUser) return;
 
 
     try {
@@ -820,148 +729,193 @@ async function checkUserLike(
 
 
         const snapshot =
-            await getDoc(likeRef);
+            await getDoc(
+                likeRef
+            );
 
 
-        if (snapshot.exists()) {
-
-            likeButton.textContent =
-                "❤️ Liked";
-
-            likeButton.style.color =
-                "#1877f2";
-
-        } else {
-
-            likeButton.textContent =
-                "❤️ Like";
-
-            likeButton.style.color =
-                "#4b5563";
-
-        }
+        button.innerHTML =
+            snapshot.exists()
+                ? "❤️ Liked"
+                : "🤍 Like";
 
 
     } catch (error) {
 
-        console.error(
-            "Checking like error:",
-            error
-        );
+        console.error(error);
 
     }
 
 }
 
 
-/* ========================================
-   SUBMIT COMMENT
-======================================== */
+/* =========================
+   COMMENT TOGGLE
+========================= */
 
-async function submitComment(
-    postId,
-    input
+function setupCommentToggle(
+    postId
 ) {
 
-    if (!currentUser) {
-        return;
-    }
-
-
-    const text =
-        input.value.trim();
-
-
-    if (!text) {
-        return;
-    }
-
-
-    try {
-
-        const commentsRef =
-            collection(
-                db,
-                "posts",
-                postId,
-                "comments"
-            );
-
-
-        await addDoc(
-            commentsRef,
-            {
-
-                text: text,
-
-                uid:
-                    currentUser.uid,
-
-                userName:
-                    currentUser.displayName ||
-                    "FreeTime User",
-
-                createdAt:
-                    serverTimestamp()
-
-            }
+    const button =
+        document.querySelector(
+            `.comment-toggle-btn[data-post-id="${postId}"]`
         );
 
 
-        const postRef =
-            doc(
-                db,
-                "posts",
-                postId
-            );
+    if (!button) return;
 
 
-        await updateDoc(
-            postRef,
-            {
-                comments:
-                    increment(1)
-            }
-        );
+    button.addEventListener(
+        "click",
+        () => {
+
+            const area =
+                document.getElementById(
+                    `comments-area-${postId}`
+                );
 
 
-        input.value = "";
+            if (!area) return;
 
 
-    } catch (error) {
+            area.style.display =
+                area.style.display ===
+                "none"
+                    ? "block"
+                    : "none";
 
-        console.error(
-            "Comment error:",
-            error
-        );
-
-        alert(
-            "Could not post comment."
-        );
-
-    }
+        }
+    );
 
 }
 
 
-/* ========================================
+/* =========================
+   ADD COMMENT
+========================= */
+
+function setupCommentSend(
+    postId
+) {
+
+    const button =
+        document.querySelector(
+            `.comment-send-btn[data-post-id="${postId}"]`
+        );
+
+
+    const input =
+        document.getElementById(
+            `comment-input-${postId}`
+        );
+
+
+    if (!button || !input)
+        return;
+
+
+    button.addEventListener(
+        "click",
+        async () => {
+
+            if (!currentUser)
+                return;
+
+
+            const text =
+                input.value.trim();
+
+
+            if (!text) return;
+
+
+            button.disabled =
+                true;
+
+
+            try {
+
+                await addDoc(
+                    collection(
+                        db,
+                        "posts",
+                        postId,
+                        "comments"
+                    ),
+                    {
+
+                        text: text,
+
+                        uid:
+                            currentUser.uid,
+
+                        userName:
+                            currentUser.displayName ||
+                            currentUser.email?.split("@")[0] ||
+                            "FreeTime User",
+
+                        createdAt:
+                            serverTimestamp(),
+
+                        parentId:
+                            null
+
+                    }
+                );
+
+
+                await updateDoc(
+                    doc(
+                        db,
+                        "posts",
+                        postId
+                    ),
+                    {
+                        comments:
+                            increment(1)
+                    }
+                );
+
+
+                input.value = "";
+
+
+            } catch (error) {
+
+                console.error(
+                    "Comment error:",
+                    error
+                );
+
+            } finally {
+
+                button.disabled =
+                    false;
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================
    LOAD COMMENTS
-======================================== */
+========================= */
 
 function loadComments(
-    postId,
-    article
+    postId
 ) {
 
     const commentsList =
-        article.querySelector(
-            ".comments-list"
+        document.getElementById(
+            `comments-list-${postId}`
         );
 
 
-    if (!commentsList) {
-        return;
-    }
+    if (!commentsList) return;
 
 
     const commentsQuery =
@@ -981,206 +935,518 @@ function loadComments(
 
     onSnapshot(
         commentsQuery,
-        (snapshot) => {
+        snapshot => {
 
-            commentsList.innerHTML = "";
-
-
-            if (snapshot.empty) {
-
-                commentsList.innerHTML = `
-
-                    <div
-                        style="
-                            color:#6b7280;
-                            font-size:12px;
-                            padding:5px 0;
-                        "
-                    >
-                        No comments yet.
-                    </div>
-
-                `;
-
-                return;
-            }
+            commentsList.innerHTML =
+                "";
 
 
             snapshot.forEach(
-                (commentSnapshot) => {
+                commentDoc => {
 
                     const comment =
-                        commentSnapshot.data();
+                        commentDoc.data();
 
 
-                    const commentBox =
-                        document.createElement(
-                            "div"
-                        );
+                    if (
+                        comment.parentId !==
+                        null
+                    ) {
+                        return;
+                    }
 
 
-                    commentBox.style.cssText = `
-                        background:#f0f2f5;
-                        border-radius:10px;
-                        padding:8px 10px;
-                        margin-bottom:7px;
-                    `;
-
-
-                    const name =
-                        comment.userName ||
-                        "FreeTime User";
-
-
-                    commentBox.innerHTML = `
-
-                        <div
-                            style="
-                                font-size:12px;
-                                font-weight:bold;
-                                margin-bottom:3px;
-                            "
-                        >
-                            ${escapeHTML(name)}
-                        </div>
-
-                        <div
-                            style="
-                                font-size:13px;
-                                line-height:1.4;
-                            "
-                        >
-                            ${escapeHTML(
-                                comment.text || ""
-                            )}
-                        </div>
-
-                    `;
-
-
-                    commentsList.appendChild(
-                        commentBox
+                    renderComment(
+                        postId,
+                        commentDoc.id,
+                        comment,
+                        commentsList
                     );
 
                 }
             );
 
         },
-
-        (error) => {
+        error => {
 
             console.error(
-                "Comment loading error:",
+                "Comments error:",
                 error
             );
 
         }
-
     );
 
 }
 
 
-/* ========================================
-   STATUS
-======================================== */
+/* =========================
+   COMMENT
+========================= */
 
-function showStatus(
-    text,
-    success
-) {
-
-    if (!postStatus) {
-        return;
-    }
-
-
-    postStatus.textContent =
-        text;
-
-
-    postStatus.style.color =
-        success
-            ? "green"
-            : "#dc2626";
-
-
-    setTimeout(
-        () => {
-
-            postStatus.textContent = "";
-
-        },
-        3000
-    );
-
-}
-
-
-/* ========================================
-   TIME
-======================================== */
-
-function formatTime(
-    timestamp
-) {
-
-    if (!timestamp) {
-        return "Just now";
-    }
-
-
-    try {
-
-        const date =
-            timestamp.toDate();
-
-
-        return date.toLocaleString();
-
-    } catch {
-
-        return "Just now";
-
-    }
-
-}
-
-
-/* ========================================
-   ESCAPE HTML
-======================================== */
-
-function escapeHTML(
-    text
+function renderComment(
+    postId,
+    commentId,
+    comment,
+    container
 ) {
 
     const div =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
-    div.textContent =
-        String(text);
+    div.className =
+        "comment-item";
 
 
-    return div.innerHTML;
+    div.innerHTML = `
+
+        <div class="comment-content">
+
+            <strong>
+                ${escapeHTML(
+                    comment.userName ||
+                    "FreeTime User"
+                )}
+            </strong>
+
+            <p>
+                ${escapeHTML(
+                    comment.text || ""
+                )}
+            </p>
+
+            <small>
+                ${formatDate(
+                    comment.createdAt
+                )}
+            </small>
+
+        </div>
+
+
+        <div class="comment-actions">
+
+            <button
+                class="reply-btn"
+                data-comment-id="${commentId}"
+            >
+                ↩️ Reply
+            </button>
+
+        </div>
+
+
+        <div
+            class="reply-box"
+            id="reply-box-${commentId}"
+            style="display:none;"
+        >
+
+            <input
+                type="text"
+                id="reply-input-${commentId}"
+                placeholder="Write a reply..."
+            >
+
+            <button
+                class="reply-send-btn"
+                data-post-id="${postId}"
+                data-comment-id="${commentId}"
+            >
+                Reply
+            </button>
+
+        </div>
+
+
+        <div
+            class="replies-list"
+            id="replies-${commentId}"
+        ></div>
+
+    `;
+
+
+    container.appendChild(
+        div
+    );
+
+
+    setupReplyButton(
+        commentId
+    );
+
+
+    setupReplySend(
+        postId,
+        commentId
+    );
+
+
+    loadReplies(
+        postId,
+        commentId
+    );
 
 }
 
 
-/* ========================================
+/* =========================
+   REPLY BUTTON
+========================= */
+
+function setupReplyButton(
+    commentId
+) {
+
+    const button =
+        document.querySelector(
+            `.reply-btn[data-comment-id="${commentId}"]`
+        );
+
+
+    if (!button) return;
+
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            const box =
+                document.getElementById(
+                    `reply-box-${commentId}`
+                );
+
+
+            if (!box) return;
+
+
+            box.style.display =
+                box.style.display ===
+                "none"
+                    ? "flex"
+                    : "none";
+
+        }
+    );
+
+}
+
+
+/* =========================
+   ADD REPLY
+========================= */
+
+function setupReplySend(
+    postId,
+    commentId
+) {
+
+    const button =
+        document.querySelector(
+            `.reply-send-btn[data-comment-id="${commentId}"]`
+        );
+
+
+    const input =
+        document.getElementById(
+            `reply-input-${commentId}`
+        );
+
+
+    if (!button || !input)
+        return;
+
+
+    button.addEventListener(
+        "click",
+        async () => {
+
+            if (!currentUser)
+                return;
+
+
+            const text =
+                input.value.trim();
+
+
+            if (!text) return;
+
+
+            button.disabled =
+                true;
+
+
+            try {
+
+                await addDoc(
+                    collection(
+                        db,
+                        "posts",
+                        postId,
+                        "comments"
+                    ),
+                    {
+
+                        text: text,
+
+                        uid:
+                            currentUser.uid,
+
+                        userName:
+                            currentUser.displayName ||
+                            currentUser.email?.split("@")[0] ||
+                            "FreeTime User",
+
+                        createdAt:
+                            serverTimestamp(),
+
+                        parentId:
+                            commentId
+
+                    }
+                );
+
+
+                await updateDoc(
+                    doc(
+                        db,
+                        "posts",
+                        postId
+                    ),
+                    {
+                        comments:
+                            increment(1)
+                    }
+                );
+
+
+                input.value = "";
+
+
+            } catch (error) {
+
+                console.error(
+                    "Reply error:",
+                    error
+                );
+
+            } finally {
+
+                button.disabled =
+                    false;
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================
+   LOAD REPLIES
+========================= */
+
+function loadReplies(
+    postId,
+    commentId
+) {
+
+    const container =
+        document.getElementById(
+            `replies-${commentId}`
+        );
+
+
+    if (!container) return;
+
+
+    const q =
+        query(
+            collection(
+                db,
+                "posts",
+                postId,
+                "comments"
+            ),
+            orderBy(
+                "createdAt",
+                "asc"
+            )
+        );
+
+
+    onSnapshot(
+        q,
+        snapshot => {
+
+            container.innerHTML =
+                "";
+
+
+            snapshot.forEach(
+                replyDoc => {
+
+                    const reply =
+                        replyDoc.data();
+
+
+                    if (
+                        reply.parentId !==
+                        commentId
+                    ) {
+                        return;
+                    }
+
+
+                    const div =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    div.className =
+                        "reply-item";
+
+
+                    div.innerHTML = `
+
+                        <strong>
+                            ${escapeHTML(
+                                reply.userName ||
+                                "FreeTime User"
+                            )}
+                        </strong>
+
+                        <p>
+                            ${escapeHTML(
+                                reply.text || ""
+                            )}
+                        </p>
+
+                        <small>
+                            ${formatDate(
+                                reply.createdAt
+                            )}
+                        </small>
+
+                    `;
+
+
+                    container.appendChild(
+                        div
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================
+   SHARE
+========================= */
+
+function setupShare(
+    postId
+) {
+
+    const button =
+        document.querySelector(
+            `.share-btn[data-post-id="${postId}"]`
+        );
+
+
+    if (!button) return;
+
+
+    button.addEventListener(
+        "click",
+        async () => {
+
+            try {
+
+                await updateDoc(
+                    doc(
+                        db,
+                        "posts",
+                        postId
+                    ),
+                    {
+                        shares:
+                            increment(1)
+                    }
+                );
+
+
+                if (
+                    navigator.share
+                ) {
+
+                    await navigator.share({
+
+                        title:
+                            "FreeTime Post",
+
+                        text:
+                            "Check out this post on FreeTime!",
+
+                        url:
+                            window.location.href
+
+                    });
+
+                } else {
+
+                    await navigator.clipboard.writeText(
+                        window.location.href
+                    );
+
+                    alert(
+                        "Post link copied!"
+                    );
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Share error:",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================
    LOGOUT
-======================================== */
+========================= */
 
 window.logoutUser =
     async function () {
 
         try {
 
-            await signOut(auth);
+            await signOut(
+                auth
+            );
+
 
             window.location.href =
                 "login.html";
+
 
         } catch (error) {
 
@@ -1189,10 +1455,68 @@ window.logoutUser =
                 error
             );
 
-            alert(
-                "Logout failed. Please try again."
-            );
-
         }
 
     };
+
+
+/* =========================
+   SECURITY
+========================= */
+
+function escapeHTML(
+    value
+) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.textContent =
+        value;
+
+
+    return div.innerHTML;
+
+}
+
+
+/* =========================
+   DATE
+========================= */
+
+function formatDate(
+    timestamp
+) {
+
+    if (!timestamp) {
+
+        return "Just now";
+
+    }
+
+
+    try {
+
+        return timestamp
+            .toDate()
+            .toLocaleString(
+                "en-BD",
+                {
+                    dateStyle:
+                        "medium",
+
+                    timeStyle:
+                        "short"
+                }
+            );
+
+    } catch {
+
+        return "Just now";
+
+    }
+
+}
