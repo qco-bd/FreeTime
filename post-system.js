@@ -2,21 +2,19 @@
 // FreeTime - Post System
 // ==========================================
 
-import {
-    getFirestore,
-    collection,
-    addDoc,
-    serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 
 import {
     getAuth,
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
-
-// Firebase App
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 
 // ==========================================
@@ -33,108 +31,181 @@ const firebaseConfig = {
 };
 
 
-// Initialize Firebase
+// ==========================================
+// FIREBASE INITIALIZE
+// ==========================================
+
 const app = initializeApp(firebaseConfig);
 
-const db = getFirestore(app);
 const auth = getAuth(app);
+
+const db = getFirestore(app);
+
+
+// ==========================================
+// HTML ELEMENTS
+// ==========================================
+
+const postText = document.getElementById("postText");
+
+const publishPostBtn =
+    document.getElementById("publishPostBtn");
+
+const postStatus =
+    document.getElementById("postStatus");
+
+
+// ==========================================
+// CURRENT USER
+// ==========================================
+
+let currentUser = null;
+
+
+onAuthStateChanged(auth, (user) => {
+
+    currentUser = user;
+
+    if (user) {
+
+        console.log(
+            "FreeTime user:",
+            user.uid
+        );
+
+    } else {
+
+        console.log(
+            "No user logged in."
+        );
+
+    }
+
+});
 
 
 // ==========================================
 // CREATE POST
 // ==========================================
 
-async function createPost() {
+async function publishPost() {
 
-    const textBox = document.getElementById("postText");
+    if (!currentUser) {
 
-    if (!textBox) {
-        console.error("postText element not found.");
+        postStatus.textContent =
+            "Please login first.";
+
         return;
     }
 
-    const text = textBox.value.trim();
+
+    const text =
+        postText.value.trim();
+
 
     if (!text) {
-        alert("Please write something before posting.");
+
+        postStatus.textContent =
+            "Please write something.";
+
         return;
     }
 
 
-    const user = auth.currentUser;
+    publishPostBtn.disabled = true;
 
-    if (!user) {
-        alert("Please login first.");
-        return;
-    }
+    publishPostBtn.textContent =
+        "Posting...";
 
 
     try {
 
-        await addDoc(collection(db, "posts"), {
+        await addDoc(
+            collection(db, "posts"),
+            {
 
-            uid: user.uid,
+                uid: currentUser.uid,
 
-            name: user.displayName || "FreeTime User",
+                name:
+                    currentUser.displayName ||
+                    "FreeTime User",
 
-            email: user.email || "",
+                email:
+                    currentUser.email ||
+                    "",
 
-            photoURL: user.photoURL || "",
+                photoURL:
+                    currentUser.photoURL ||
+                    "",
 
-            text: text,
+                text: text,
 
-            background: "default",
+                background: "default",
 
-            likes: 0,
+                likes: 0,
 
-            comments: 0,
+                comments: 0,
 
-            shares: 0,
+                shares: 0,
 
-            createdAt: serverTimestamp()
+                createdAt:
+                    serverTimestamp()
 
-        });
-
-
-        // Clear textarea
-        textBox.value = "";
+            }
+        );
 
 
-        alert("Post published successfully!");
+        postText.value = "";
+
+
+        postStatus.textContent =
+            "Post published successfully!";
+
+
+        console.log(
+            "FreeTime post published."
+        );
 
 
     } catch (error) {
 
-        console.error("Post creation error:", error);
+        console.error(
+            "Post Error:",
+            error
+        );
 
-        alert("Failed to publish post.");
+
+        postStatus.textContent =
+            "Failed to publish post.";
 
     }
+
+
+    publishPostBtn.disabled = false;
+
+    publishPostBtn.textContent =
+        "Post";
 
 }
 
 
 // ==========================================
-// MAKE FUNCTION AVAILABLE
+// BUTTON
 // ==========================================
 
-window.createPost = createPost;
+if (publishPostBtn) {
+
+    publishPostBtn.addEventListener(
+        "click",
+        publishPost
+    );
+
+}
 
 
 // ==========================================
-// CHECK LOGIN
+// GLOBAL
 // ==========================================
 
-onAuthStateChanged(auth, (user) => {
-
-    if (user) {
-
-        console.log("Logged in:", user.uid);
-
-    } else {
-
-        console.log("No user logged in.");
-
-    }
-
-});
+window.publishPost =
+    publishPost;
