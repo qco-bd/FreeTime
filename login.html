@@ -1,64 +1,203 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Login • FreeTime</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="auth.css">
+    <title>Login • FreeTime</title>
 
-</head><body><main class="auth-page">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-    <section class="auth-box">
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #eef4ff, #f8faff);
+        }
 
-        <div class="brand">
-            <div class="brand-logo">F</div>
-            <h1>FreeTime</h1>
-        </div>
+        .container {
+            width: 92%;
+            max-width: 400px;
+        }
 
-        <h2>Welcome back</h2>
-        <p class="subtitle">Log in to continue enjoying FreeTime.</p>
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-        <form id="loginForm">
+        .logo h1 {
+            margin: 0;
+            font-size: 38px;
+            color: #1877f2;
+        }
 
-            <label>Email</label>
+        .logo p {
+            color: #666;
+            margin-top: 7px;
+        }
+
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 18px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.10);
+        }
+
+        .card h2 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 22px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 13px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #1877f2;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #1877f2;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0d65d9;
+        }
+
+        .switch {
+            text-align: center;
+            margin-top: 18px;
+            color: #666;
+        }
+
+        .switch span {
+            color: #1877f2;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="logo">
+        <h1>FreeTime</h1>
+        <p>Enjoy Your Free Time with us.</p>
+    </div>
+
+    <div class="card">
+
+        <!-- LOGIN -->
+        <div id="loginBox">
+
+            <h2>Welcome Back</h2>
+
             <input
                 type="email"
                 id="loginEmail"
-                placeholder="Enter your email"
-                required
+                placeholder="Email address"
             >
 
-            <label>Password</label>
             <input
                 type="password"
                 id="loginPassword"
-                placeholder="Enter your password"
-                required
+                placeholder="Password"
             >
 
-            <button type="submit">Log In</button>
+            <button onclick="loginUser()">
+                Log In
+            </button>
 
-        </form>
+            <div class="switch">
+                Don't have an account?
+                <span onclick="showSignup()">Create one</span>
+            </div>
 
-        <a href="#" class="forgot">Forgot password?</a>
-
-        <div class="divider">
-            <span>OR</span>
         </div>
 
-        <button class="google-btn" type="button">
-            Continue with Google
-        </button>
 
-        <p class="account-text">
-            Don't have an account?
-            <a href="signup.html">Create account</a>
-        </p>
+        <!-- SIGNUP -->
+        <div id="signupBox" class="hidden">
 
-    </section>
+            <h2>Create Account</h2>
 
-</main>
+            <input
+                type="text"
+                id="signupName"
+                placeholder="Full name"
+            >
 
-<script type="module" src="auth.js"></script>
+            <input
+                type="email"
+                id="signupEmail"
+                placeholder="Email address"
+            >
+
+            <input
+                type="password"
+                id="signupPassword"
+                placeholder="Password"
+            >
+
+            <button onclick="signupUser()">
+                Create Account
+            </button>
+
+            <div class="switch">
+                Already have an account?
+                <span onclick="showLogin()">Log in</span>
+            </div>
+
+        </div>
+
+        <div id="message"></div>
+
+    </div>
+
+</div>
+
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<script src="firebase-config.js"></script>
+
+<script src="login.js"></script>
 
 </body>
-          </html>
+            </html>
