@@ -1,62 +1,817 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Home • FreeTime</title>
 
-    <link rel="stylesheet" href="home.css">
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f5f9;
+            color: #222;
+        }
+
+
+        /* =========================
+           NAVBAR
+        ========================== */
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+
+            background: white;
+
+            height: 64px;
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 20px;
+
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+
+        .logo {
+            font-size: 27px;
+            font-weight: bold;
+            color: #1877f2;
+
+            margin-right: 25px;
+        }
+
+
+        .search-box {
+            flex: 1;
+            max-width: 450px;
+        }
+
+
+        .search-box input {
+            width: 100%;
+
+            padding: 12px 18px;
+
+            border: none;
+            outline: none;
+
+            background: #f0f2f5;
+
+            border-radius: 25px;
+
+            font-size: 14px;
+        }
+
+
+        .nav-buttons {
+            margin-left: auto;
+
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .nav-btn {
+            border: none;
+
+            background: #f0f2f5;
+
+            width: 42px;
+            height: 42px;
+
+            border-radius: 50%;
+
+            font-size: 18px;
+
+            cursor: pointer;
+        }
+
+
+        /* =========================
+           USER PROFILE
+        ========================== */
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+
+            gap: 9px;
+
+            margin-left: 10px;
+
+            padding: 5px 10px;
+
+            border-radius: 25px;
+
+            cursor: pointer;
+        }
+
+
+        .user-profile:hover {
+            background: #f0f2f5;
+        }
+
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 50%;
+
+            background: #1877f2;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: white;
+
+            font-size: 18px;
+        }
+
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        #userName {
+            font-size: 14px;
+        }
+
+
+        #userEmail {
+            font-size: 11px;
+            color: #777;
+        }
+
+
+        /* =========================
+           MAIN
+        ========================== */
+
+        .main {
+            max-width: 1200px;
+
+            margin: auto;
+
+            padding: 25px 15px;
+
+            display: grid;
+
+            grid-template-columns: 240px 1fr 260px;
+
+            gap: 20px;
+        }
+
+
+        /* =========================
+           LEFT SIDEBAR
+        ========================== */
+
+        .sidebar {
+            position: sticky;
+            top: 85px;
+
+            height: fit-content;
+        }
+
+
+        .side-card {
+            background: white;
+
+            border-radius: 14px;
+
+            padding: 15px;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+
+        .side-item {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 12px;
+
+            border-radius: 10px;
+
+            cursor: pointer;
+
+            font-size: 14px;
+        }
+
+
+        .side-item:hover {
+            background: #f0f2f5;
+        }
+
+
+        .side-icon {
+            font-size: 20px;
+        }
+
+
+        /* =========================
+           STORIES
+        ========================== */
+
+        .stories {
+            background: white;
+
+            padding: 15px;
+
+            border-radius: 14px;
+
+            margin-bottom: 18px;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+
+        .section-title {
+            font-size: 18px;
+
+            font-weight: bold;
+
+            margin-bottom: 13px;
+        }
+
+
+        .story-container {
+            display: flex;
+
+            gap: 10px;
+
+            overflow-x: auto;
+        }
+
+
+        .story {
+            min-width: 105px;
+            height: 155px;
+
+            border-radius: 12px;
+
+            background: linear-gradient(135deg, #1877f2, #7b2cff);
+
+            color: white;
+
+            display: flex;
+            align-items: flex-end;
+
+            padding: 10px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        .create-story {
+            background: #f0f2f5;
+
+            color: #222;
+        }
+
+
+        /* =========================
+           CREATE POST
+        ========================== */
+
+        .create-post {
+            background: white;
+
+            border-radius: 14px;
+
+            padding: 15px;
+
+            margin-bottom: 18px;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+
+        .post-input {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .post-input input {
+            flex: 1;
+
+            border: none;
+            outline: none;
+
+            background: #f0f2f5;
+
+            padding: 13px 17px;
+
+            border-radius: 25px;
+        }
+
+
+        .post-actions {
+            display: flex;
+
+            margin-top: 12px;
+
+            border-top: 1px solid #eee;
+
+            padding-top: 10px;
+        }
+
+
+        .post-action {
+            flex: 1;
+
+            border: none;
+
+            background: none;
+
+            padding: 10px;
+
+            cursor: pointer;
+
+            border-radius: 8px;
+
+            font-weight: bold;
+        }
+
+
+        .post-action:hover {
+            background: #f0f2f5;
+        }
+
+
+        /* =========================
+           POST
+        ========================== */
+
+        .post {
+            background: white;
+
+            border-radius: 14px;
+
+            margin-bottom: 18px;
+
+            padding: 15px;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+
+        .post-header {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .post-avatar {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 50%;
+
+            background: #1877f2;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: white;
+        }
+
+
+        .post-user {
+            font-weight: bold;
+        }
+
+
+        .post-time {
+            font-size: 11px;
+            color: #777;
+
+            margin-top: 3px;
+        }
+
+
+        .post-text {
+            margin: 15px 0;
+
+            line-height: 1.5;
+        }
+
+
+        .post-image {
+            width: 100%;
+
+            min-height: 220px;
+
+            border-radius: 10px;
+
+            background: linear-gradient(135deg, #e7efff, #d9d9ff);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 50px;
+        }
+
+
+        .post-stats {
+            display: flex;
+            justify-content: space-between;
+
+            color: #777;
+
+            font-size: 13px;
+
+            padding: 10px 3px;
+
+            border-bottom: 1px solid #eee;
+        }
+
+
+        .post-buttons {
+            display: flex;
+        }
+
+
+        .post-buttons button {
+            flex: 1;
+
+            border: none;
+
+            background: none;
+
+            padding: 12px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+
+            border-radius: 8px;
+        }
+
+
+        .post-buttons button:hover {
+            background: #f0f2f5;
+        }
+
+
+        /* =========================
+           RIGHT SIDEBAR
+        ========================== */
+
+        .right-sidebar {
+            position: sticky;
+            top: 85px;
+
+            height: fit-content;
+        }
+
+
+        .right-card {
+            background: white;
+
+            border-radius: 14px;
+
+            padding: 15px;
+
+            margin-bottom: 15px;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+
+        .right-card h3 {
+            margin-top: 0;
+        }
+
+
+        .contact {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 9px 0;
+        }
+
+
+        .contact-avatar {
+            width: 35px;
+            height: 35px;
+
+            border-radius: 50%;
+
+            background: #ddd;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        /* =========================
+           LOGOUT
+        ========================== */
+
+        .logout-btn {
+            width: 100%;
+
+            border: none;
+
+            background: #ffe8e8;
+
+            color: #d60000;
+
+            padding: 11px;
+
+            border-radius: 9px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        .logout-btn:hover {
+            background: #ffd6d6;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================== */
+
+        @media (max-width: 900px) {
+
+            .main {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar,
+            .right-sidebar {
+                display: none;
+            }
+
+            .search-box {
+                display: none;
+            }
+
+            header {
+                padding: 0 12px;
+            }
+
+            .logo {
+                margin-right: 10px;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+        }
+
+
+        @media (max-width: 500px) {
+
+            .nav-buttons {
+                gap: 4px;
+            }
+
+            .nav-btn {
+                width: 36px;
+                height: 36px;
+            }
+
+            .main {
+                padding: 12px 8px;
+            }
+
+        }
+
+    </style>
+
 </head>
-<script type="module" src="home.js"></script>
+
+
 <body>
 
-    <!-- TOP NAVBAR -->
-    <header class="topbar">
 
-        <div class="logo-area">
-            <div class="mini-logo">F</div>
-            <span>FreeTime</span>
-        </div>
+<!-- =========================
+     NAVBAR
+========================== -->
 
-        <div class="top-actions">
-            <button>⌕</button>
-            <button>💬</button>
-            <button>🔔</button>
-        </div>
+<header>
 
-    </header>
+    <div class="logo">
+        FreeTime
+    </div>
 
 
-    <!-- MAIN -->
-    <main class="main-container">
+    <div class="search-box">
 
-        <!-- CREATE POST -->
-        <section class="create-post">
+        <input
+            type="text"
+            placeholder="Search FreeTime..."
+        >
 
-            <div class="post-top">
+    </div>
 
-                <div class="profile-circle">
-                    U
-                </div>
 
-                <button class="post-input">
-                    What's on your mind?
-                </button>
+    <div class="nav-buttons">
+
+        <button class="nav-btn">
+            🏠
+        </button>
+
+        <button class="nav-btn">
+            💬
+        </button>
+
+        <button class="nav-btn">
+            🔔
+        </button>
+
+
+        <!-- USER -->
+
+        <div class="user-profile">
+
+            <div class="user-avatar">
+                👤
+            </div>
+
+
+            <div class="user-info">
+
+                <strong id="userName">
+                    Loading...
+                </strong>
+
+                <small id="userEmail">
+                </small>
 
             </div>
 
-            <div class="post-options">
+        </div>
 
-                <button>
+    </div>
+
+</header>
+
+
+
+<!-- =========================
+     MAIN
+========================== -->
+
+<div class="main">
+
+
+    <!-- LEFT SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="side-card">
+
+            <div class="side-item">
+                <span class="side-icon">👤</span>
+                <span>Profile</span>
+            </div>
+
+
+            <div class="side-item">
+                <span class="side-icon">🏠</span>
+                <span>Home</span>
+            </div>
+
+
+            <div class="side-item">
+                <span class="side-icon">👥</span>
+                <span>Friends</span>
+            </div>
+
+
+            <div class="side-item">
+                <span class="side-icon">📸</span>
+                <span>Photos</span>
+            </div>
+
+
+            <div class="side-item">
+                <span class="side-icon">🎬</span>
+                <span>Videos</span>
+            </div>
+
+
+            <div class="side-item">
+                <span class="side-icon">🔖</span>
+                <span>Saved</span>
+            </div>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =========================
+         FEED
+    ========================== -->
+
+    <main>
+
+
+        <!-- STORIES -->
+
+        <section class="stories">
+
+            <div class="section-title">
+                Stories
+            </div>
+
+
+            <div class="story-container">
+
+                <div class="story create-story">
+                    ➕ Create Story
+                </div>
+
+                <div class="story">
+                    Your Story
+                </div>
+
+                <div class="story">
+                    Friend Story
+                </div>
+
+                <div class="story">
+                    FreeTime
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- CREATE POST -->
+
+        <section class="create-post">
+
+            <div class="post-input">
+
+                <div class="post-avatar">
+                    👤
+                </div>
+
+
+                <input
+                    type="text"
+                    placeholder="What's on your mind?"
+                >
+
+            </div>
+
+
+            <div class="post-actions">
+
+                <button class="post-action">
                     📷 Photo
                 </button>
 
-                <button>
-                    🎥 Video
+                <button class="post-action">
+                    🎬 Video
                 </button>
 
-                <button>
+                <button class="post-action">
                     😊 Feeling
                 </button>
 
@@ -65,169 +820,220 @@
         </section>
 
 
-        <!-- STORIES -->
-        <section class="stories">
 
-            <div class="story create-story">
+        <!-- SAMPLE POST -->
 
-                <div class="story-add">+</div>
+        <article class="post">
 
-                <span>Your Story</span>
+            <div class="post-header">
+
+                <div class="post-avatar">
+                    👤
+                </div>
+
+
+                <div>
+
+                    <div class="post-user">
+                        FreeTime
+                    </div>
+
+                    <div class="post-time">
+                        Just now · 🌎
+                    </div>
+
+                </div>
 
             </div>
 
-            <div class="story">
-                <div class="story-user">A</div>
-                <span>Story</span>
+
+            <div class="post-text">
+
+                Welcome to FreeTime! 🎉
+
+                <br><br>
+
+                Enjoy your free time with us.
+
             </div>
 
-            <div class="story">
-                <div class="story-user">M</div>
-                <span>Story</span>
+
+            <div class="post-image">
+                🌟
             </div>
 
-            <div class="story">
-                <div class="story-user">R</div>
-                <span>Story</span>
+
+            <div class="post-stats">
+
+                <span>
+                    ❤️ 120 Likes
+                </span>
+
+                <span>
+                    25 Comments · 5 Shares
+                </span>
+
             </div>
 
-            <div class="story">
-                <div class="story-user">S</div>
-                <span>Story</span>
+
+            <div class="post-buttons">
+
+                <button>
+                    ❤️ Like
+                </button>
+
+                <button>
+                    💬 Comment
+                </button>
+
+                <button>
+                    ↗️ Share
+                </button>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- ADVERTISEMENT -->
+
+        <section class="post">
+
+            <div class="section-title">
+                Advertisement
+            </div>
+
+
+            <div class="post-image">
+
+                📢
+
             </div>
 
         </section>
 
 
-        <!-- FEED -->
 
-        <section class="feed">
+        <!-- SPONSORED -->
 
-            <!-- POST -->
-            <article class="post">
+        <section class="post">
 
-                <div class="post-header">
-
-                    <div class="profile-circle">
-                        F
-                    </div>
-
-                    <div>
-                        <strong>FreeTime</strong>
-                        <small>Just now · 🌎</small>
-                    </div>
-
-                    <button class="more">⋯</button>
-
-                </div>
-
-                <div class="post-content">
-
-                    <p>
-                        Welcome to <strong>FreeTime</strong> 🎉
-                    </p>
-
-                    <p>
-                        Enjoy Your Free Time with us.
-                    </p>
-
-                </div>
-
-                <div class="post-stats">
-
-                    <span>❤️ 0</span>
-                    <span>0 Comments</span>
-
-                </div>
-
-                <div class="post-actions">
-
-                    <button>♡ Like</button>
-                    <button>💬 Comment</button>
-                    <button>↗ Share</button>
-
-                </div>
-
-            </article>
+            <div class="section-title">
+                Sponsored
+            </div>
 
 
-            <!-- SAMPLE POST -->
-            <article class="post">
+            <div class="post-text">
 
-                <div class="post-header">
+                Sponsored content will appear here.
 
-                    <div class="profile-circle">
-                        U
-                    </div>
-
-                    <div>
-                        <strong>FreeTime User</strong>
-                        <small>5 min · 🌎</small>
-                    </div>
-
-                    <button class="more">⋯</button>
-
-                </div>
-
-                <div class="post-content">
-
-                    <p>
-                        Hello FreeTime! 👋
-                    </p>
-
-                </div>
-
-                <div class="post-stats">
-
-                    <span>❤️ 0</span>
-                    <span>0 Comments</span>
-
-                </div>
-
-                <div class="post-actions">
-
-                    <button>♡ Like</button>
-                    <button>💬 Comment</button>
-                    <button>↗ Share</button>
-
-                </div>
-
-            </article>
+            </div>
 
         </section>
+
 
     </main>
 
 
-    <!-- BOTTOM NAVIGATION -->
-    <nav class="bottom-nav">
 
-        <a class="active" href="home.html">
-            🏠
-            <span>Home</span>
-        </a>
+    <!-- =========================
+         RIGHT SIDEBAR
+    ========================== -->
 
-        <a href="#">
-            🔍
-            <span>Search</span>
-        </a>
+    <aside class="right-sidebar">
 
-        <a href="#">
-            ➕
-            <span>Create</span>
-        </a>
 
-        <a href="#">
-            🔔
-            <span>Alerts</span>
-        </a>
+        <div class="right-card">
 
-        <a href="#">
-            👤
-            <span>Profile</span>
-        </a>
+            <h3>
+                Contacts
+            </h3>
 
-    </nav>
+
+            <div class="contact">
+
+                <div class="contact-avatar">
+                    👤
+                </div>
+
+                <span>
+                    Friend One
+                </span>
+
+            </div>
+
+
+            <div class="contact">
+
+                <div class="contact-avatar">
+                    👤
+                </div>
+
+                <span>
+                    Friend Two
+                </span>
+
+            </div>
+
+
+            <div class="contact">
+
+                <div class="contact-avatar">
+                    👤
+                </div>
+
+                <span>
+                    Friend Three
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ACCOUNT -->
+
+        <div class="right-card">
+
+            <h3>
+                Your Account
+            </h3>
+
+
+            <p>
+                <strong id="userNameSide">
+                    Loading...
+                </strong>
+            </p>
+
+
+            <p id="userEmailSide">
+            </p>
+
+
+            <button
+                class="logout-btn"
+                onclick="logoutUser()"
+            >
+                🚪 Logout
+            </button>
+
+        </div>
+
+
+    </aside>
+
+</div>
+
+
+
+<!-- Firebase-connected JavaScript -->
+
+<script type="module" src="home.js"></script>
+
 
 </body>
-                                               </html>
+
+    </html>
