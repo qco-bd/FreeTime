@@ -1,135 +1,85 @@
-function showSignup() {
+import {
+    auth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    updateProfile
+} from "./firebase-config.js";
+
+window.showSignup = function () {
     document.getElementById("loginBox").classList.add("hidden");
     document.getElementById("signupBox").classList.remove("hidden");
+};
 
-    clearMessage();
-}
-
-
-function showLogin() {
+window.showLogin = function () {
     document.getElementById("signupBox").classList.add("hidden");
     document.getElementById("loginBox").classList.remove("hidden");
+};
 
-    clearMessage();
-}
-
-
-function showMessage(message, success = false) {
-
+function message(text, success = false) {
     const box = document.getElementById("message");
-
-    box.textContent = message;
-
+    box.textContent = text;
     box.style.color = success ? "green" : "red";
 }
 
-
-function clearMessage() {
-    document.getElementById("message").textContent = "";
-}
-
-
-// LOGIN
-function loginUser() {
-
-    const email = document.getElementById("loginEmail").value.trim();
-    const password = document.getElementById("loginPassword").value;
-
-    if (!email || !password) {
-        showMessage("Please enter your email and password.");
-        return;
-    }
-
-    showMessage("Logging in...", true);
-
-    auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-
-            showMessage("Login successful!", true);
-
-            setTimeout(() => {
-                window.location.href = "home.html";
-            }, 700);
-
-        })
-        .catch((error) => {
-
-            showMessage(getFirebaseError(error.code));
-
-        });
-}
-
-
-// SIGNUP
-function signupUser() {
-
+window.signupUser = async function () {
     const name = document.getElementById("signupName").value.trim();
     const email = document.getElementById("signupEmail").value.trim();
     const password = document.getElementById("signupPassword").value;
 
     if (!name || !email || !password) {
-        showMessage("Please fill in all fields.");
+        message("Please fill in all fields.");
         return;
     }
 
-    if (password.length < 6) {
-        showMessage("Password must be at least 6 characters.");
-        return;
-    }
+    try {
+        message("Creating account...", true);
 
-    showMessage("Creating your account...", true);
+        const result = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
 
-    auth.createUserWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-
-            const user = userCredential.user;
-
-            return user.updateProfile({
-                displayName: name
-            });
-
-        })
-        .then(() => {
-
-            showMessage("Account created successfully!", true);
-
-            setTimeout(() => {
-                window.location.href = "home.html";
-            }, 700);
-
-        })
-        .catch((error) => {
-
-            showMessage(getFirebaseError(error.code));
-
+        await updateProfile(result.user, {
+            displayName: name
         });
-}
 
+        message("Account created successfully!", true);
 
-// FIREBASE ERROR HANDLER
-function getFirebaseError(code) {
+        setTimeout(() => {
+            location.href = "home.html";
+        }, 800);
 
-    switch (code) {
-
-        case "auth/email-already-in-use":
-            return "This email is already registered.";
-
-        case "auth/invalid-email":
-            return "Please enter a valid email address.";
-
-        case "auth/weak-password":
-            return "Password is too weak.";
-
-        case "auth/user-not-found":
-            return "No account found with this email.";
-
-        case "auth/wrong-password":
-            return "Incorrect password.";
-
-        case "auth/too-many-requests":
-            return "Too many attempts. Please try again later.";
-
-        default:
-            return "Something went wrong. Please try again.";
+    } catch (error) {
+        message(error.message);
     }
-      }
+};
+
+window.loginUser = async function () {
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+
+    if (!email || !password) {
+        message("Please enter email and password.");
+        return;
+    }
+
+    try {
+        message("Logging in...", true);
+
+        await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+
+        message("Login successful!", true);
+
+        setTimeout(() => {
+            location.href = "home.html";
+        }, 700);
+
+    } catch (error) {
+        message("Incorrect email or password.");
+    }
+};
