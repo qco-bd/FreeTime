@@ -1,29 +1,55 @@
-const openPost = document.getElementById("openPost");
-const closePost = document.getElementById("closePost");
-
-const postModal = document.getElementById("postModal");
-
-
-openPost.addEventListener("click", () => {
-
-    postModal.classList.add("show");
-
-});
+import {
+    auth,
+    onAuthStateChanged,
+    signOut
+} from "./firebase-config.js";
 
 
-closePost.addEventListener("click", () => {
+onAuthStateChanged(auth, (user) => {
 
-    postModal.classList.remove("show");
+    if (!user) {
 
-});
+        window.location.href = "login.html";
+
+        return;
+    }
 
 
-postModal.addEventListener("click", (event) => {
+    console.log("Logged in user:", user);
 
-    if (event.target === postModal) {
 
-        postModal.classList.remove("show");
+    const userName = user.displayName || "FreeTime User";
 
+
+    const nameElement = document.getElementById("userName");
+
+    if (nameElement) {
+        nameElement.textContent = userName;
+    }
+
+
+    const emailElement = document.getElementById("userEmail");
+
+    if (emailElement) {
+        emailElement.textContent = user.email;
     }
 
 });
+
+
+// Logout
+window.logoutUser = async function () {
+
+    try {
+
+        await signOut(auth);
+
+        window.location.href = "login.html";
+
+    } catch (error) {
+
+        console.error("Logout error:", error);
+
+    }
+
+};
