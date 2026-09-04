@@ -9,7 +9,15 @@ import { auth, app } from "./firebase.js";
 
 const db = getFirestore(app);
 
-window.savePostToFirebase = async function (text, background) {
+
+/* ================================
+   SAVE POST
+================================ */
+
+window.savePostToFirebase = async function (
+    text,
+    background
+) {
 
     const user = auth.currentUser;
 
@@ -18,37 +26,73 @@ window.savePostToFirebase = async function (text, background) {
         return false;
     }
 
+
+    /* Check text */
+
     if (!text || text.trim() === "") {
+
         alert("Please write something.");
+
         return false;
     }
 
+
     try {
 
-        await addDoc(collection(db, "posts"), {
-            uid: user.uid,
-            text: text.trim(),
-            background: background || "",
-            createdAt: serverTimestamp()
-        });
+        const userName =
+            user.displayName ||
+            user.email?.split("@")[0] ||
+            "FreeTime User";
 
-        alert("Post published successfully!");
+
+        const userPhoto =
+            user.photoURL || "";
+
+
+        await addDoc(
+            collection(db, "posts"),
+            {
+
+                uid: user.uid,
+
+                name: userName,
+
+                photoURL: userPhoto,
+
+                text: text.trim(),
+
+                background:
+                    background || "",
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        alert(
+            "Post published successfully!"
+        );
+
 
         return true;
 
+
     } catch (error) {
 
-        console.error("Firebase Post Error:", error);
+        console.error(
+            "Firebase Post Error:",
+            error
+        );
 
-        alert("Failed to publish post:\n\n" + error.message);
+
+        alert(
+            "Failed to publish post.\n\n" +
+            error.message
+        );
+
 
         return false;
     }
 };
-
-
-/*
-   FreeTime Post System Loaded
-*/
-
-console.log("FreeTime Post System loaded successfully.");
