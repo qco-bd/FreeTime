@@ -632,3 +632,12 @@ body {
     padding: 8px 12px;
     font-size: 14px;
 }
+.freetime-like-count {
+    padding: 5px 5px 10px;
+    color: #65676b;
+    font-size: 14px;
+}
+
+.like-button.liked {
+    font-weight: bold;
+}
