@@ -26,15 +26,10 @@ window.savePostToFirebase = async function (text, background) {
     try {
 
         await addDoc(collection(db, "posts"), {
-
             uid: user.uid,
-
             text: text.trim(),
-
             background: background || "",
-
             createdAt: serverTimestamp()
-
         });
 
         alert("Post published successfully!");
@@ -45,8 +40,15 @@ window.savePostToFirebase = async function (text, background) {
 
         console.error("Firebase Post Error:", error);
 
-        alert("Failed to publish post.\n\n" + error.message);
+        alert("Failed to publish post:\n\n" + error.message);
 
         return false;
     }
 };
+
+
+/*
+   FreeTime Post System Loaded
+*/
+
+console.log("FreeTime Post System loaded successfully.");
