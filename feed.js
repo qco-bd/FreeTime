@@ -3,10 +3,14 @@ import {
     collection,
     query,
     orderBy,
-    onSnapshot
+    onSnapshot,
+    doc,
+    setDoc,
+    deleteDoc,
+    getDocs
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-import { app } from "./firebase.js";
+import { auth, app } from "./firebase.js";
 
 const db = getFirestore(app);
 
@@ -19,6 +23,86 @@ function escapeHTML(text) {
     const div = document.createElement("div");
     div.textContent = text || "";
     return div.innerHTML;
+}
+
+async function getLikeCount(postId) {
+    const likesSnapshot = await getDocs(
+        collection(db, "posts", postId, "likes")
+    );
+
+    return likesSnapshot.size;
+}
+
+async function hasUserLiked(postId) {
+    const user = auth.currentUser;
+
+    if (!user) return false;
+
+    const likeRef = doc(
+        db,
+        "posts",
+        postId,
+        "likes",
+        user.uid
+    );
+
+    const snapshot = await getDocs(
+        collection(db, "posts", postId, "likes")
+    );
+
+    return snapshot.docs.some(
+        item => item.id === user.uid
+    );
+}
+
+async function toggleLike(postId, button, countElement) {
+
+    const user = auth.currentUser;
+
+    if (!user) {
+        alert("Please login first.");
+        return;
+    }
+
+    const likeRef = doc(
+        db,
+        "posts",
+        postId,
+        "likes",
+        user.uid
+    );
+
+    try {
+
+        const liked = await hasUserLiked(postId);
+
+        if (liked) {
+
+            await deleteDoc(likeRef);
+
+            button.classList.remove("liked");
+
+        } else {
+
+            await setDoc(likeRef, {
+                uid: user.uid,
+                createdAt: new Date()
+            });
+
+            button.classList.add("liked");
+        }
+
+        const count = await getLikeCount(postId);
+
+        countElement.textContent =
+            `${count} ${count === 1 ? "Like" : "Likes"}`;
+
+    } catch (error) {
+
+        console.error("Like Error:", error);
+
+        alert("Unable to update Like.");
+    }
 }
 
 function createPostCard(post) {
@@ -37,6 +121,7 @@ function createPostCard(post) {
 
     card.innerHTML = `
         <div class="freetime-post-header">
+
             <div class="freetime-avatar">
                 <span>U</span>
             </div>
@@ -45,18 +130,61 @@ function createPostCard(post) {
                 <strong>FreeTime User</strong>
                 <small>${time}</small>
             </div>
+
         </div>
 
         <div class="freetime-post-text">
             ${escapeHTML(post.text)}
         </div>
 
+        <div class="freetime-like-count">
+            <span id="like-count-${post.id}">
+                Loading...
+            </span>
+        </div>
+
         <div class="freetime-post-actions">
-            <button type="button">❤️ Like</button>
-            <button type="button">💬 Comment</button>
-            <button type="button">↗ Share</button>
+
+            <button
+                type="button"
+                class="like-button"
+                data-post-id="${post.id}">
+                ❤️ Like
+            </button>
+
+            <button type="button">
+                💬 Comment
+            </button>
+
+            <button type="button">
+                ↗ Share
+            </button>
+
         </div>
     `;
+
+    const likeButton =
+        card.querySelector(".like-button");
+
+    const countElement =
+        card.querySelector(`#like-count-${post.id}`);
+
+    likeButton.addEventListener("click", () => {
+
+        toggleLike(
+            post.id,
+            likeButton,
+            countElement
+        );
+
+    });
+
+    getLikeCount(post.id).then(count => {
+
+        countElement.textContent =
+            `${count} ${count === 1 ? "Like" : "Likes"}`;
+
+    });
 
     return card;
 }
@@ -74,7 +202,8 @@ function findFeedContainer() {
 
     for (const selector of selectors) {
 
-        const element = document.querySelector(selector);
+        const element =
+            document.querySelector(selector);
 
         if (element) {
             return element;
@@ -89,29 +218,33 @@ onSnapshot(postsQuery, (snapshot) => {
     const feed = findFeedContainer();
 
     if (!feed) {
+
         console.warn(
-            "FreeTime: Feed container not found. " +
-            "Add an element with id='postsContainer'."
+            "FreeTime: postsContainer not found."
         );
+
         return;
     }
 
     feed.innerHTML = "";
 
-    snapshot.forEach((doc) => {
+    snapshot.forEach((docSnapshot) => {
 
-        const post = doc.data();
+        const post = {
+            id: docSnapshot.id,
+            ...docSnapshot.data()
+        };
 
-        const card = createPostCard({
-            id: doc.id,
-            ...post
-        });
+        const card = createPostCard(post);
 
         feed.appendChild(card);
     });
 
 }, (error) => {
 
-    console.error("FreeTime Feed Error:", error);
+    console.error(
+        "FreeTime Feed Error:",
+        error
+    );
 
 });
