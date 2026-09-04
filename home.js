@@ -18,16 +18,16 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-// ========================================
-// FIRESTORE
-// ========================================
+/* ========================================
+   FIRESTORE
+======================================== */
 
 const db = getFirestore();
 
 
-// ========================================
-// ELEMENTS
-// ========================================
+/* ========================================
+   ELEMENTS
+======================================== */
 
 const postsContainer =
     document.getElementById("postsContainer");
@@ -42,23 +42,21 @@ const postStatus =
     document.getElementById("postStatus");
 
 
-// ========================================
-// CURRENT USER
-// ========================================
+/* ========================================
+   CURRENT USER
+======================================== */
 
 let currentUser = null;
 
 
-// ========================================
-// LOGIN CHECK
-// ========================================
+/* ========================================
+   LOGIN CHECK
+======================================== */
 
 onAuthStateChanged(auth, (user) => {
 
     if (!user) {
-
         window.location.href = "login.html";
-
         return;
     }
 
@@ -70,7 +68,9 @@ onAuthStateChanged(auth, (user) => {
     const userEmail =
         user.email || "";
 
-    // Name
+
+    /* USER NAME */
+
     const nameElement =
         document.getElementById("userName");
 
@@ -79,7 +79,8 @@ onAuthStateChanged(auth, (user) => {
     }
 
 
-    // Email
+    /* USER EMAIL */
+
     const emailElement =
         document.getElementById("userEmail");
 
@@ -88,12 +89,10 @@ onAuthStateChanged(auth, (user) => {
     }
 
 
-    // First letter
+    /* USER INITIAL */
+
     const firstLetter =
-        userName
-            .trim()
-            .charAt(0)
-            .toUpperCase() || "U";
+        userName.trim().charAt(0).toUpperCase() || "U";
 
 
     const welcomeAvatar =
@@ -120,15 +119,16 @@ onAuthStateChanged(auth, (user) => {
     }
 
 
-    // Load posts
+    /* LOAD POSTS */
+
     loadPosts();
 
 });
 
 
-// ========================================
-// CREATE POST
-// ========================================
+/* ========================================
+   CREATE POST
+======================================== */
 
 if (publishPostBtn) {
 
@@ -139,6 +139,7 @@ if (publishPostBtn) {
             if (!currentUser) {
                 return;
             }
+
 
             const text =
                 postText.value.trim();
@@ -193,6 +194,7 @@ if (publishPostBtn) {
 
                 postText.value = "";
 
+
                 showStatus(
                     "Post published successfully! 🎉",
                     true
@@ -226,9 +228,9 @@ if (publishPostBtn) {
 }
 
 
-// ========================================
-// LOAD POSTS
-// ========================================
+/* ========================================
+   LOAD POSTS
+======================================== */
 
 function loadPosts() {
 
@@ -237,10 +239,11 @@ function loadPosts() {
     }
 
 
-    const postsQuery = query(
-        collection(db, "posts"),
-        orderBy("createdAt", "desc")
-    );
+    const postsQuery =
+        query(
+            collection(db, "posts"),
+            orderBy("createdAt", "desc")
+        );
 
 
     onSnapshot(
@@ -267,7 +270,7 @@ function loadPosts() {
 
                         No posts yet.
 
-                        <br>
+                        <br><br>
 
                         Be the first to post! 🎉
 
@@ -288,6 +291,7 @@ function loadPosts() {
                     const postId =
                         postSnapshot.id;
 
+
                     createPostElement(
                         postId,
                         post
@@ -304,6 +308,7 @@ function loadPosts() {
                 "Loading posts error:",
                 error
             );
+
 
             postsContainer.innerHTML = `
 
@@ -334,9 +339,9 @@ function loadPosts() {
 }
 
 
-// ========================================
-// CREATE POST ELEMENT
-// ========================================
+/* ========================================
+   CREATE POST ELEMENT
+======================================== */
 
 function createPostElement(
     postId,
@@ -403,7 +408,7 @@ function createPostElement(
 
         <div class="post-stats">
 
-            <span id="likes-${postId}">
+            <span>
                 ${likes} Likes
             </span>
 
@@ -420,7 +425,6 @@ function createPostElement(
             <button
                 type="button"
                 class="like-btn"
-                data-id="${postId}"
             >
                 ❤️ Like
             </button>
@@ -437,17 +441,82 @@ function createPostElement(
             <button
                 type="button"
                 class="share-btn"
-                data-id="${postId}"
             >
                 ↗️ Share
             </button>
 
         </div>
 
+
+        <!-- COMMENT AREA -->
+
+        <div
+            class="comment-area"
+            style="
+                display:none;
+                padding:10px 14px 14px;
+                border-top:1px solid #eeeeee;
+            "
+        >
+
+            <div
+                class="comments-list"
+                style="
+                    margin-bottom:10px;
+                "
+            ></div>
+
+
+            <div
+                style="
+                    display:flex;
+                    gap:7px;
+                    align-items:center;
+                "
+            >
+
+                <input
+                    type="text"
+                    class="comment-input"
+                    placeholder="Write a comment..."
+                    style="
+                        flex:1;
+                        border:none;
+                        outline:none;
+                        background:#f0f2f5;
+                        border-radius:20px;
+                        padding:10px 13px;
+                        font-size:13px;
+                    "
+                >
+
+
+                <button
+                    type="button"
+                    class="comment-submit"
+                    style="
+                        border:none;
+                        background:#1877f2;
+                        color:white;
+                        padding:9px 12px;
+                        border-radius:8px;
+                        cursor:pointer;
+                        font-weight:bold;
+                    "
+                >
+                    Post
+                </button>
+
+            </div>
+
+        </div>
+
     `;
 
 
-    // LIKE
+    /* ====================================
+       LIKE
+    ==================================== */
 
     const likeButton =
         article.querySelector(".like-btn");
@@ -489,7 +558,9 @@ function createPostElement(
     );
 
 
-    // SHARE
+    /* ====================================
+       SHARE
+    ==================================== */
 
     const shareButton =
         article.querySelector(".share-btn");
@@ -526,6 +597,10 @@ function createPostElement(
                         window.location.href
                     );
 
+                    alert(
+                        "Post link copied! 🔗"
+                    );
+
                 }
 
 
@@ -542,7 +617,9 @@ function createPostElement(
     );
 
 
-    // COMMENT
+    /* ====================================
+       COMMENT BUTTON
+    ==================================== */
 
     const commentButton =
         article.querySelector(
@@ -550,13 +627,87 @@ function createPostElement(
         );
 
 
+    const commentArea =
+        article.querySelector(
+            ".comment-area"
+        );
+
+
     commentButton.addEventListener(
         "click",
         () => {
 
-            alert(
-                "Comment system will be added next. 💬"
+            if (
+                commentArea.style.display ===
+                "none"
+            ) {
+
+                commentArea.style.display =
+                    "block";
+
+                loadComments(
+                    postId,
+                    article
+                );
+
+            } else {
+
+                commentArea.style.display =
+                    "none";
+
+            }
+
+        }
+    );
+
+
+    /* ====================================
+       POST COMMENT
+    ==================================== */
+
+    const commentInput =
+        article.querySelector(
+            ".comment-input"
+        );
+
+
+    const commentSubmit =
+        article.querySelector(
+            ".comment-submit"
+        );
+
+
+    commentSubmit.addEventListener(
+        "click",
+        async () => {
+
+            await submitComment(
+                postId,
+                commentInput
             );
+
+        }
+    );
+
+
+    /* ENTER TO COMMENT */
+
+    commentInput.addEventListener(
+        "keydown",
+        async (event) => {
+
+            if (
+                event.key === "Enter"
+            ) {
+
+                event.preventDefault();
+
+                await submitComment(
+                    postId,
+                    commentInput
+                );
+
+            }
 
         }
     );
@@ -567,9 +718,235 @@ function createPostElement(
 }
 
 
-// ========================================
-// STATUS MESSAGE
-// ========================================
+/* ========================================
+   SUBMIT COMMENT
+======================================== */
+
+async function submitComment(
+    postId,
+    input
+) {
+
+    if (!currentUser) {
+        return;
+    }
+
+
+    const text =
+        input.value.trim();
+
+
+    if (!text) {
+        return;
+    }
+
+
+    try {
+
+        const commentsRef =
+            collection(
+                db,
+                "posts",
+                postId,
+                "comments"
+            );
+
+
+        await addDoc(
+            commentsRef,
+            {
+
+                text: text,
+
+                uid: currentUser.uid,
+
+                userName:
+                    currentUser.displayName ||
+                    "FreeTime User",
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        /* UPDATE COMMENT COUNT */
+
+        const postRef =
+            doc(
+                db,
+                "posts",
+                postId
+            );
+
+
+        await updateDoc(
+            postRef,
+            {
+                comments:
+                    increment(1)
+            }
+        );
+
+
+        input.value = "";
+
+
+    } catch (error) {
+
+        console.error(
+            "Comment error:",
+            error
+        );
+
+        alert(
+            "Could not post comment."
+        );
+
+    }
+
+}
+
+
+/* ========================================
+   LOAD COMMENTS
+======================================== */
+
+function loadComments(
+    postId,
+    article
+) {
+
+    const commentsList =
+        article.querySelector(
+            ".comments-list"
+        );
+
+
+    if (!commentsList) {
+        return;
+    }
+
+
+    const commentsQuery =
+        query(
+            collection(
+                db,
+                "posts",
+                postId,
+                "comments"
+            ),
+            orderBy(
+                "createdAt",
+                "asc"
+            )
+        );
+
+
+    onSnapshot(
+        commentsQuery,
+        (snapshot) => {
+
+            commentsList.innerHTML = "";
+
+
+            if (snapshot.empty) {
+
+                commentsList.innerHTML = `
+
+                    <div
+                        style="
+                            color:#6b7280;
+                            font-size:12px;
+                            padding:5px 0;
+                        "
+                    >
+                        No comments yet.
+                    </div>
+
+                `;
+
+                return;
+            }
+
+
+            snapshot.forEach(
+                (commentSnapshot) => {
+
+                    const comment =
+                        commentSnapshot.data();
+
+
+                    const commentBox =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    commentBox.style.cssText = `
+                        background:#f0f2f5;
+                        border-radius:10px;
+                        padding:8px 10px;
+                        margin-bottom:7px;
+                    `;
+
+
+                    const name =
+                        comment.userName ||
+                        "FreeTime User";
+
+
+                    commentBox.innerHTML = `
+
+                        <div
+                            style="
+                                font-size:12px;
+                                font-weight:bold;
+                                margin-bottom:3px;
+                            "
+                        >
+                            ${escapeHTML(name)}
+                        </div>
+
+                        <div
+                            style="
+                                font-size:13px;
+                                line-height:1.4;
+                            "
+                        >
+                            ${escapeHTML(comment.text || "")}
+                        </div>
+
+                    `;
+
+
+                    commentsList.appendChild(
+                        commentBox
+                    );
+
+                }
+            );
+
+        },
+
+        (error) => {
+
+            console.error(
+                "Comment loading error:",
+                error
+            );
+
+        }
+
+    );
+
+}
+
+
+/* ========================================
+   STATUS
+======================================== */
 
 function showStatus(
     text,
@@ -603,9 +980,9 @@ function showStatus(
 }
 
 
-// ========================================
-// TIME
-// ========================================
+/* ========================================
+   TIME
+======================================== */
 
 function formatTime(
     timestamp
@@ -633,9 +1010,9 @@ function formatTime(
 }
 
 
-// ========================================
-// SECURITY
-// ========================================
+/* ========================================
+   SECURITY
+======================================== */
 
 function escapeHTML(
     text
@@ -644,17 +1021,19 @@ function escapeHTML(
     const div =
         document.createElement("div");
 
+
     div.textContent =
         String(text);
+
 
     return div.innerHTML;
 
 }
 
 
-// ========================================
-// LOGOUT
-// ========================================
+/* ========================================
+   LOGOUT
+======================================== */
 
 window.logoutUser =
     async function () {
