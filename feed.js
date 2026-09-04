@@ -15,26 +15,103 @@ const postsQuery = query(
     orderBy("createdAt", "desc")
 );
 
+function escapeHTML(text) {
+    const div = document.createElement("div");
+    div.textContent = text || "";
+    return div.innerHTML;
+}
+
+function createPostCard(post) {
+
+    const card = document.createElement("article");
+
+    card.className = "freetime-post-card";
+
+    if (post.background) {
+        card.style.background = post.background;
+    }
+
+    const time = post.createdAt
+        ? post.createdAt.toDate().toLocaleString()
+        : "Just now";
+
+    card.innerHTML = `
+        <div class="freetime-post-header">
+            <div class="freetime-avatar">
+                <span>U</span>
+            </div>
+
+            <div>
+                <strong>FreeTime User</strong>
+                <small>${time}</small>
+            </div>
+        </div>
+
+        <div class="freetime-post-text">
+            ${escapeHTML(post.text)}
+        </div>
+
+        <div class="freetime-post-actions">
+            <button type="button">❤️ Like</button>
+            <button type="button">💬 Comment</button>
+            <button type="button">↗ Share</button>
+        </div>
+    `;
+
+    return card;
+}
+
+function findFeedContainer() {
+
+    const selectors = [
+        "#postsContainer",
+        "#feed",
+        "#postFeed",
+        ".posts-container",
+        ".post-feed",
+        ".feed"
+    ];
+
+    for (const selector of selectors) {
+
+        const element = document.querySelector(selector);
+
+        if (element) {
+            return element;
+        }
+    }
+
+    return null;
+}
+
 onSnapshot(postsQuery, (snapshot) => {
 
-    console.log("FreeTime Posts:", snapshot.size);
+    const feed = findFeedContainer();
+
+    if (!feed) {
+        console.warn(
+            "FreeTime: Feed container not found. " +
+            "Add an element with id='postsContainer'."
+        );
+        return;
+    }
+
+    feed.innerHTML = "";
 
     snapshot.forEach((doc) => {
 
         const post = doc.data();
 
-        console.log({
+        const card = createPostCard({
             id: doc.id,
-            uid: post.uid,
-            text: post.text,
-            background: post.background,
-            createdAt: post.createdAt
+            ...post
         });
 
+        feed.appendChild(card);
     });
 
 }, (error) => {
 
-    console.error("Feed Error:", error);
+    console.error("FreeTime Feed Error:", error);
 
 });
