@@ -14,7 +14,10 @@ import {
     serverTimestamp,
     doc,
     updateDoc,
-    increment
+    increment,
+    setDoc,
+    deleteDoc,
+    getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
@@ -50,7 +53,7 @@ let currentUser = null;
 
 
 /* ========================================
-   LOGIN CHECK
+   LOGIN
 ======================================== */
 
 onAuthStateChanged(auth, (user) => {
@@ -69,8 +72,6 @@ onAuthStateChanged(auth, (user) => {
         user.email || "";
 
 
-    /* USER NAME */
-
     const nameElement =
         document.getElementById("userName");
 
@@ -79,8 +80,6 @@ onAuthStateChanged(auth, (user) => {
     }
 
 
-    /* USER EMAIL */
-
     const emailElement =
         document.getElementById("userEmail");
 
@@ -88,8 +87,6 @@ onAuthStateChanged(auth, (user) => {
         emailElement.textContent = userEmail;
     }
 
-
-    /* USER INITIAL */
 
     const firstLetter =
         userName.trim().charAt(0).toUpperCase() || "U";
@@ -118,8 +115,6 @@ onAuthStateChanged(auth, (user) => {
         headerAvatar.textContent = firstLetter;
     }
 
-
-    /* LOAD POSTS */
 
     loadPosts();
 
@@ -267,13 +262,9 @@ function loadPosts() {
                             margin-bottom:15px;
                         "
                     >
-
                         No posts yet.
-
                         <br><br>
-
                         Be the first to post! 🎉
-
                     </div>
 
                 `;
@@ -321,13 +312,9 @@ function loadPosts() {
                         text-align:center;
                     "
                 >
-
                     Could not load posts.
-
                     <br>
-
                     Check your Firestore settings.
-
                 </div>
 
             `;
@@ -408,7 +395,7 @@ function createPostElement(
 
         <div class="post-stats">
 
-            <span>
+            <span class="likes-count">
                 ${likes} Likes
             </span>
 
@@ -515,18 +502,50 @@ function createPostElement(
 
 
     /* ====================================
-       LIKE
+       LIKE SYSTEM
     ==================================== */
 
     const likeButton =
         article.querySelector(".like-btn");
 
 
+    const likesCount =
+        article.querySelector(".likes-count");
+
+
+    checkUserLike(
+        postId,
+        likeButton
+    );
+
+
     likeButton.addEventListener(
         "click",
         async () => {
 
+            if (!currentUser) {
+                return;
+            }
+
+
             try {
+
+                likeButton.disabled = true;
+
+
+                const likeRef =
+                    doc(
+                        db,
+                        "posts",
+                        postId,
+                        "likes",
+                        currentUser.uid
+                    );
+
+
+                const likeSnapshot =
+                    await getDoc(likeRef);
+
 
                 const postRef =
                     doc(
@@ -536,13 +555,68 @@ function createPostElement(
                     );
 
 
-                await updateDoc(
-                    postRef,
-                    {
-                        likes:
-                            increment(1)
-                    }
-                );
+                if (likeSnapshot.exists()) {
+
+                    /*
+                     USER ALREADY LIKED
+                     REMOVE LIKE
+                    */
+
+                    await deleteDoc(likeRef);
+
+
+                    await updateDoc(
+                        postRef,
+                        {
+                            likes:
+                                increment(-1)
+                        }
+                    );
+
+
+                    likeButton.textContent =
+                        "❤️ Like";
+
+                    likeButton.style.color =
+                        "#4b5563";
+
+
+                } else {
+
+                    /*
+                     NEW LIKE
+                    */
+
+                    await setDoc(
+                        likeRef,
+                        {
+
+                            uid:
+                                currentUser.uid,
+
+                            createdAt:
+                                serverTimestamp()
+
+                        }
+                    );
+
+
+                    await updateDoc(
+                        postRef,
+                        {
+                            likes:
+                                increment(1)
+                        }
+                    );
+
+
+                    likeButton.textContent =
+                        "❤️ Liked";
+
+                    likeButton.style.color =
+                        "#1877f2";
+
+                }
 
 
             } catch (error) {
@@ -553,6 +627,9 @@ function createPostElement(
                 );
 
             }
+
+
+            likeButton.disabled = false;
 
         }
     );
@@ -662,7 +739,7 @@ function createPostElement(
 
 
     /* ====================================
-       POST COMMENT
+       SUBMIT COMMENT
     ==================================== */
 
     const commentInput =
@@ -690,8 +767,6 @@ function createPostElement(
     );
 
 
-    /* ENTER TO COMMENT */
-
     commentInput.addEventListener(
         "keydown",
         async (event) => {
@@ -714,6 +789,67 @@ function createPostElement(
 
 
     postsContainer.appendChild(article);
+
+}
+
+
+/* ========================================
+   CHECK USER LIKE
+======================================== */
+
+async function checkUserLike(
+    postId,
+    likeButton
+) {
+
+    if (!currentUser) {
+        return;
+    }
+
+
+    try {
+
+        const likeRef =
+            doc(
+                db,
+                "posts",
+                postId,
+                "likes",
+                currentUser.uid
+            );
+
+
+        const snapshot =
+            await getDoc(likeRef);
+
+
+        if (snapshot.exists()) {
+
+            likeButton.textContent =
+                "❤️ Liked";
+
+            likeButton.style.color =
+                "#1877f2";
+
+        } else {
+
+            likeButton.textContent =
+                "❤️ Like";
+
+            likeButton.style.color =
+                "#4b5563";
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Checking like error:",
+            error
+        );
+
+    }
 
 }
 
@@ -758,7 +894,8 @@ async function submitComment(
 
                 text: text,
 
-                uid: currentUser.uid,
+                uid:
+                    currentUser.uid,
 
                 userName:
                     currentUser.displayName ||
@@ -770,8 +907,6 @@ async function submitComment(
             }
         );
 
-
-        /* UPDATE COMMENT COUNT */
 
         const postRef =
             doc(
@@ -915,7 +1050,9 @@ function loadComments(
                                 line-height:1.4;
                             "
                         >
-                            ${escapeHTML(comment.text || "")}
+                            ${escapeHTML(
+                                comment.text || ""
+                            )}
                         </div>
 
                     `;
@@ -1011,7 +1148,7 @@ function formatTime(
 
 
 /* ========================================
-   SECURITY
+   ESCAPE HTML
 ======================================== */
 
 function escapeHTML(
