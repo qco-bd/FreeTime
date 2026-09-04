@@ -660,3 +660,24 @@ body {
     justify-content: center;
     font-weight: bold;
 }
+.verified-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 18px;
+    height: 18px;
+
+    margin-left: 5px;
+
+    border-radius: 50%;
+
+    background: #1877f2;
+
+    color: white;
+
+    font-size: 12px;
+    font-weight: bold;
+
+    vertical-align: middle;
+}
