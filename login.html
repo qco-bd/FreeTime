@@ -1,117 +1,116 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Login • FreeTime</title>
 
-    <title>Login • FreeTime</title>
+<style>
+    * {
+        box-sizing: border-box;
+    }
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+    body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #eef4ff, #f8faff);
+    }
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #eef4ff, #f8faff);
-        }
+    .container {
+        width: 92%;
+        max-width: 400px;
+    }
 
-        .container {
-            width: 92%;
-            max-width: 400px;
-        }
+    .logo {
+        text-align: center;
+        margin-bottom: 20px;
+    }
 
-        .logo {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    .logo h1 {
+        margin: 0;
+        font-size: 38px;
+        color: #1877f2;
+    }
 
-        .logo h1 {
-            margin: 0;
-            font-size: 38px;
-            color: #1877f2;
-        }
+    .logo p {
+        color: #666;
+        margin-top: 7px;
+    }
 
-        .logo p {
-            color: #666;
-            margin-top: 7px;
-        }
+    .card {
+        background: white;
+        padding: 28px;
+        border-radius: 18px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.10);
+    }
 
-        .card {
-            background: white;
-            padding: 28px;
-            border-radius: 18px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.10);
-        }
+    .card h2 {
+        text-align: center;
+        margin-top: 0;
+        margin-bottom: 22px;
+    }
 
-        .card h2 {
-            text-align: center;
-            margin-top: 0;
-            margin-bottom: 22px;
-        }
+    input {
+        width: 100%;
+        padding: 14px;
+        margin-bottom: 13px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        font-size: 15px;
+        outline: none;
+    }
 
-        input {
-            width: 100%;
-            padding: 14px;
-            margin-bottom: 13px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 15px;
-            outline: none;
-        }
+    input:focus {
+        border-color: #1877f2;
+    }
 
-        input:focus {
-            border-color: #1877f2;
-        }
+    button {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 10px;
+        background: #1877f2;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+    }
 
-        button {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            background: #1877f2;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+    button:hover {
+        background: #0d65d9;
+    }
 
-        button:hover {
-            background: #0d65d9;
-        }
+    button:disabled {
+        background: #9bbff0;
+        cursor: not-allowed;
+    }
 
-        .switch {
-            text-align: center;
-            margin-top: 18px;
-            color: #666;
-        }
+    .switch {
+        text-align: center;
+        margin-top: 18px;
+        color: #666;
+    }
 
-        .switch span {
-            color: #1877f2;
-            font-weight: bold;
-            cursor: pointer;
-        }
+    .switch span {
+        color: #1877f2;
+        font-weight: bold;
+        cursor: pointer;
+    }
 
-        #message {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 14px;
-        }
+    #message {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 14px;
+        min-height: 20px;
+    }
 
-        .hidden {
-            display: none;
-        }
-    </style>
-</head>
+    .hidden {
+        display: none;
+    }
+</style>
 
-<body>
-
-<div class="container">
+</head><body><div class="container">
 
     <div class="logo">
         <h1>FreeTime</h1>
@@ -129,15 +128,17 @@
                 type="email"
                 id="loginEmail"
                 placeholder="Email address"
+                autocomplete="email"
             >
 
             <input
                 type="password"
                 id="loginPassword"
                 placeholder="Password"
+                autocomplete="current-password"
             >
 
-            <button onclick="loginUser()">
+            <button id="loginBtn" onclick="loginUser()">
                 Log In
             </button>
 
@@ -158,21 +159,24 @@
                 type="text"
                 id="signupName"
                 placeholder="Full name"
+                autocomplete="name"
             >
 
             <input
                 type="email"
                 id="signupEmail"
                 placeholder="Email address"
+                autocomplete="email"
             >
 
             <input
                 type="password"
                 id="signupPassword"
                 placeholder="Password"
+                autocomplete="new-password"
             >
 
-            <button onclick="signupUser()">
+            <button id="signupBtn" onclick="signupUser()">
                 Create Account
             </button>
 
@@ -190,11 +194,319 @@
 </div>
 
 
-<!-- Firebase -->
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
+<!-- Firebase Configuration -->
 <script src="firebase-config.js"></script>
 
 
+<script>
+
+    // =========================
+    // CHECK FIREBASE
+    // =========================
+
+    if (typeof firebase === "undefined") {
+
+        showMessage(
+            "Firebase could not be loaded. Please check your internet connection.",
+            "red"
+        );
+
+    }
+
+
+    // =========================
+    // SHOW SIGNUP
+    // =========================
+
+    function showSignup() {
+
+        document.getElementById("loginBox")
+            .classList.add("hidden");
+
+        document.getElementById("signupBox")
+            .classList.remove("hidden");
+
+        clearMessage();
+    }
+
+
+    // =========================
+    // SHOW LOGIN
+    // =========================
+
+    function showLogin() {
+
+        document.getElementById("signupBox")
+            .classList.add("hidden");
+
+        document.getElementById("loginBox")
+            .classList.remove("hidden");
+
+        clearMessage();
+    }
+
+
+    // =========================
+    // LOGIN
+    // =========================
+
+    function loginUser() {
+
+        const email =
+            document.getElementById("loginEmail")
+            .value.trim();
+
+        const password =
+            document.getElementById("loginPassword")
+            .value;
+
+
+        if (!email || !password) {
+
+            showMessage(
+                "Please enter email and password.",
+                "red"
+            );
+
+            return;
+        }
+
+
+        const button =
+            document.getElementById("loginBtn");
+
+        button.disabled = true;
+        button.innerText = "Logging in...";
+
+        clearMessage();
+
+
+        firebase.auth()
+            .signInWithEmailAndPassword(email, password)
+
+            .then(function(userCredential) {
+
+                showMessage(
+                    "Login successful! Redirecting...",
+                    "green"
+                );
+
+
+                setTimeout(function() {
+
+                    window.location.href = "home.html";
+
+                }, 800);
+
+            })
+
+            .catch(function(error) {
+
+                console.error(error);
+
+                let message =
+                    "Login failed. Please try again.";
+
+
+                if (error.code === "auth/invalid-email") {
+
+                    message = "Invalid email address.";
+
+                }
+
+                else if (error.code === "auth/user-not-found") {
+
+                    message =
+                        "No account found with this email.";
+
+                }
+
+                else if (error.code === "auth/wrong-password") {
+
+                    message =
+                        "Incorrect password.";
+
+                }
+
+                else if (error.code === "auth/invalid-credential") {
+
+                    message =
+                        "Incorrect email or password.";
+
+                }
+
+                else if (error.code === "auth/too-many-requests") {
+
+                    message =
+                        "Too many attempts. Please try again later.";
+
+                }
+
+
+                showMessage(message, "red");
+
+                button.disabled = false;
+                button.innerText = "Log In";
+
+            });
+
+    }
+
+
+    // =========================
+    // CREATE ACCOUNT
+    // =========================
+
+    function signupUser() {
+
+        const name =
+            document.getElementById("signupName")
+            .value.trim();
+
+        const email =
+            document.getElementById("signupEmail")
+            .value.trim();
+
+        const password =
+            document.getElementById("signupPassword")
+            .value;
+
+
+        if (!name || !email || !password) {
+
+            showMessage(
+                "Please fill in all fields.",
+                "red"
+            );
+
+            return;
+        }
+
+
+        if (password.length < 6) {
+
+            showMessage(
+                "Password must be at least 6 characters.",
+                "red"
+            );
+
+            return;
+        }
+
+
+        const button =
+            document.getElementById("signupBtn");
+
+        button.disabled = true;
+        button.innerText = "Creating Account...";
+
+        clearMessage();
+
+
+        firebase.auth()
+            .createUserWithEmailAndPassword(email, password)
+
+            .then(function(userCredential) {
+
+                const user =
+                    userCredential.user;
+
+
+                // Save user's name in Firebase Authentication
+                return user.updateProfile({
+
+                    displayName: name
+
+                });
+
+            })
+
+            .then(function() {
+
+                showMessage(
+                    "Account created successfully! Redirecting...",
+                    "green"
+                );
+
+
+                setTimeout(function() {
+
+                    window.location.href = "home.html";
+
+                }, 1000);
+
+            })
+
+            .catch(function(error) {
+
+                console.error(error);
+
+                let message =
+                    "Account creation failed.";
+
+
+                if (error.code === "auth/email-already-in-use") {
+
+                    message =
+                        "This email is already registered.";
+
+                }
+
+                else if (error.code === "auth/invalid-email") {
+
+                    message =
+                        "Invalid email address.";
+
+                }
+
+                else if (error.code === "auth/weak-password") {
+
+                    message =
+                        "Password is too weak. Use at least 6 characters.";
+
+                }
+
+
+                showMessage(message, "red");
+
+                button.disabled = false;
+                button.innerText = "Create Account";
+
+            });
+
+    }
+
+
+    // =========================
+    // MESSAGE
+    // =========================
+
+    function showMessage(text, color) {
+
+        const message =
+            document.getElementById("message");
+
+        message.innerText = text;
+
+        message.style.color = color;
+
+    }
+
+
+    function clearMessage() {
+
+        const message =
+            document.getElementById("message");
+
+        message.innerText = "";
+
+    }
+
+</script>
+
+</body></html>
